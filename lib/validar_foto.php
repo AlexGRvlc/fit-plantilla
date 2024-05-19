@@ -4,36 +4,40 @@ function validar_foto($nombre)
     $foto = $_FILES['foto'];
 
     global $path_foto;
+    global $error;
+    global $path_foto;
 
+    $prueba  = "esto es una prueba";
 
     // Directorio donde se guardarán las fotos
     $foto_dir = "fotos/$nombre/";
+    $foto = $_FILES['foto'];
 
-    // Verificar y crear directorio si no existe
-    if (!file_exists("fotos")) {
-        mkdir("fotos", 0777, true);
-    }
-    if (!file_exists($foto_dir)) {
-        mkdir($foto_dir, 0777, true);
-    }
-
-    // Ruta donde se guardará la foto de perfil
-    $path_foto = "{$foto_dir}profile.jpg";
-
-    // Obtener la extensión del archivo
+    $nombre_foto = $foto['name'];
+    $tmp_name = $foto['tmp_name'];
+    $path_foto = "{$foto_dir}profile.jpg"; // ruta de guardado
+    $exFile = preg_replace('/image\//', '', $foto['type']);
     $extension_archivo = pathinfo($foto["name"], PATHINFO_EXTENSION);
+    $extensiones_validas = ["jpeg", "jpg", "png", "webp"];
 
     // Validar la extensión del archivo
-    $extensiones_validas = ["jpeg", "jpg", "png", "webp"];
     if (in_array($extension_archivo, $extensiones_validas)) {
         // Mover la foto al directorio del usuario
-        if (move_uploaded_file($foto["tmp_name"], $path_foto)) {
+        // Verificar y crear directorio si no existe
+        if (!file_exists("fotos")) {
+            mkdir("fotos", 0777, true);
+        }
+        if (!file_exists($foto_dir)) {
+            mkdir($foto_dir, 0777, true);
+        }
+        if (move_uploaded_file($tmp_name, $path_foto)) {
             return true;
         } else {
-            return trigger_error("Error al mover el archivo.", E_USER_WARNING);
+            echo "Error al mover el archivo.";
         }
     } else {
-        return trigger_error("Tipo de archivo no válido. Se admiten archivos JPEG, PNG y WebP.", E_USER_WARNING);
+         echo "Tipo de archivo no válido. Se admiten archivos JPEG, PNG y WebP.";
     }
-}
 
+    // return $error;
+}

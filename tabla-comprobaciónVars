@@ -1,0 +1,67 @@
+                // echo $nombre;
+                // echo var_dump($_POST);
+                // echo "<br>";
+                // echo $apellidos;
+                // echo "<br>";
+                // echo $email;
+                // echo "<br>";
+                // echo $password;
+                // echo "<br>";
+                // echo $confirm_pass;
+                // echo "<br>";
+                // echo $saldo;
+                // echo "<br>";
+                // echo var_dump($foto);
+                // echo "<br>";
+                // echo $foto["name"];
+
+
+
+
+
+
+
+
+                // $array_socios = $db->getSocios();
+
+                // $db->preparar("SELECT nombre, apellidos, saldo FROM socios");
+                // $db->ejecutar();
+                // $db->prep()->bind_result( $nombre, $apellidos, $dni);
+
+                // echo "<table class= 'table table-cell'>
+
+                //         <thead>
+                //             <tr>
+                //                 <td>ID-Socio</td>
+                //                 <td>Nombre</td>
+                //                 <td>Apellidos</td>
+                //                 <td>Contraseña</td>
+                //                 <td>E-mail</td>
+                //                 <td>DNI</td>
+                //                 <td>Saldo</td>
+                //             </tr>
+                //         <tbody>";
+
+                // foreach($array_socios as $value){
+                //     echo "<tr>";
+                //     foreach($value as $out_value){
+                //         echo "<td>$out_value</td>";
+                //     }
+                //     echo "</tr>";
+                // }
+
+                // while( $db->resultado()){
+                //     echo "<tr>
+                //             <td>$nombre</td>
+                //             <td>$apellidos</td>
+                //             <td>$dni</td>                 
+                //     </tr>";
+                // }
+
+
+                // echo "</tbody>
+                // </thead>
+                // </table>
+                // ";
+
+                // echo $db->validarDatos('nombre', 'socios', 'simon');

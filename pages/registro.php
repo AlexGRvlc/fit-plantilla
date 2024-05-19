@@ -28,95 +28,86 @@
 
 
                 <?php
-                
+
                 error_reporting(E_ALL);
                 ini_set('display_errors', 1);
 
+
                 require_once "../lib/validar_foto.php";
                 require_once "../lib/config_conexion.php";
-                spl_autoload_register(function($clase){
+                spl_autoload_register(function ($clase) {
                     require_once "../lib/$clase.php";
                 });
-
+                global $ok;
+                
                 // Verificar si se ha enviado el formulario
                 if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     // Obtener datos del formulario
                     $nombre = strtolower($_POST['nombre']);
-                    $apellidos = strtolower($_POST['apellidos']);
+                    $apellido = strtolower($_POST['apellido']);
                     $email = $_POST['email'];
                     $password = $_POST['contrasena'];
                     $confirm_pass = $_POST['confirm-contrasena'];
                     $saldo = $_POST['saldo'];
-
-                    // Llamada a función dentro de lib
-                    // validar_foto($nombre);                    
+                    $foto = $_FILES['foto'];
+                
+                    $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+                
+                    if ($nombre && $apellido && $email && $password && $confirm_pass && $saldo) {
+                
+                        $expreg = '/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/';
+                
+                        if (preg_match($expreg, $email)) {
+                
+                            if (strlen($password) > 6) {
+                
+                                if ($password == $confirm_pass) {
+                
+                                    $validar_email = $db->validarDatos('email', 'socios', $email);
+                
+                                    if ($validar_email == 0) {
+                
+                                        if (validar_foto($nombre)) {
+                                            $consulta = "INSERT INTO socios (nombre, apellido, contrasena, email, saldo) VALUES (?, ?, ?, ?, ?)";
+                                            if ($db->preparar($consulta)) {
+                                                $db->prep()->bind_param('ssssd', $nombre, $apellido, $password, $email, $saldo);
+                                                if ($db->ejecutar()) {
+                                                    echo "Te has registrado con éxito!";
+                                                    $ok = true;
+                                                } else {
+                                                    echo "Error al ejecutar la consulta.";
+                                                }
+                                            } else {
+                                                echo "Error al preparar la consulta.";
+                                            }
+                                        } else {
+                                            echo $error;
+                                        }
+                                    } else {
+                                        echo "Ese email ya está registrado!";
+                                    }
+                                } else {
+                                    echo "Las contraseñas no coinciden!";
+                                }
+                            } else {
+                                echo "La contraseña debe ser mayor a 6 caracteres";
+                            }
+                        } else {
+                            echo "email erróneo!";
+                        }
+                    } else {
+                        echo "<br>algo falla...";
+                    }
                 }
-
-                // echo $nombre;
-                // echo "<br>";
-                // echo $apellidos;
-                // echo "<br>";
-                // echo $email;
-                // echo "<br>";
-                // echo $password;
-                // echo "<br>";
-                // echo $confirm_pass;
-                // echo "<br>";
-                // echo $saldo;
-
-
-
-
-
-
-                // $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_CHARSET);
-
-                // $array_socios = $db->getSocios();
-
-                // $db->preparar("SELECT nombre, apellidos, saldo FROM socios");
-                // $db->ejecutar();
-                // $db->prep()->bind_result( $nombre, $apellidos, $dni);
-
-                // echo "<table class= 'table table-cell'>
-                
-                //         <thead>
-                //             <tr>
-                //                 <td>ID-Socio</td>
-                //                 <td>Nombre</td>
-                //                 <td>Apellidos</td>
-                //                 <td>Contraseña</td>
-                //                 <td>E-mail</td>
-                //                 <td>DNI</td>
-                //                 <td>Saldo</td>
-                //             </tr>
-                //         <tbody>";
-
-                        // foreach($array_socios as $value){
-                        //     echo "<tr>";
-                        //     foreach($value as $out_value){
-                        //         echo "<td>$out_value</td>";
-                        //     }
-                        //     echo "</tr>";
-                        // }
-
-                        // while( $db->resultado()){
-                        //     echo "<tr>
-                        //             <td>$nombre</td>
-                        //             <td>$apellidos</td>
-                        //             <td>$dni</td>                 
-                        //     </tr>";
-                        // }
-                        
-                        
-                        // echo "</tbody>
-                        // </thead>
-                        // </table>
-                        // ";
-                
-                        // echo $db->validarDatos('nombre', 'socios', 'simon');
-                
                 ?>
 
+                <?php if ( $ok ) : ?>
+
+                    <h2>Saludos <?php echo $nombre ?></h2>
+                    <img class="img-fluid text-center" src="<?php echo $path_foto ?>" alt="foto-perfil">
+                    <p>Te has registrado con éxito, haz click en el botón para bloguearte!</p>
+
+                    <?php else : ?>
 
                 <form action="" enctype="multipart/form-data" method="POST" role="form" class="rounded">
                     <legend class="text-center">Registro</legend>
@@ -152,6 +143,8 @@
                     <button type="submit" class="btn btn-primary rounded">Aceptar</button>
                     <a class="float-end" href="login.php">Ya estoy registrado</a>
                 </form>
+
+                <?php endif; ?>
             </div>
         </div>
 
