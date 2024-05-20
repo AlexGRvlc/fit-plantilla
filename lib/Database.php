@@ -71,5 +71,10 @@ class Database {
         $this->resultado = $stmt->get_result();
         return $this->resultado->num_rows;
     }
+
+    public function cerrar(){
+        $this->db->close();
+        $this->prep->close();
+    }
 }
 ?>

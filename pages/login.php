@@ -28,11 +28,11 @@
                 <form action="../admin/index_admin.php" method="POST" role="form" class="rounded">
                     <legend class="text-center">Log In</legend>
                     <div class="form-group mb-3">
-                        <input type="text" class="form-control" id="" placeholder="usuario">
+                        <input name="email" type="text" class="form-control" id="" placeholder="usuario">
                     </div>
 
                     <div class="form-group mb-3">
-                        <input type="password" class="form-control" id="" placeholder="contraseña">
+                        <input name="password" type="password" class="form-control" id="password" placeholder="contraseña">
                     </div>
                     <button type="submit" class="btn btn-primary rounded">Ingresar</button>
                     <a class="float-end" href="registro.php">Registrarse</a>
