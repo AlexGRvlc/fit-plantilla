@@ -25,7 +25,7 @@ if ((isset($_SESSION['nombre']) && ($_SESSION['id_socio'])) || isset($_COOKIE['n
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" id="fondo_nav">
+    <nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary" id="fondo_nav">
         <div class="container-fluid nav_bar">
             <a class="navbar-brand" href="../index.php">
                 <img src="../public/img/logo.webp" alt="logo" />

@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 session_start();
 
-if (!$_SESSION['id_socio'] && !$_SESSION['nombre']){
-    header ("Location: ../index.php");
+if (!$_SESSION['id_socio'] && !$_SESSION['nombre']) {
+    header("Location: ../index.php");
     exit;
 }
 
@@ -24,23 +24,56 @@ $imagen = $_SESSION['imagen'];
 
 <body>
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" id="fondo_nav">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" id="fondo_nav">
         <div class="container-fluid nav_bar">
             <a class="navbar-brand" href="../index.php">
                 <img src="../public/img/logo.webp" alt="logo" />
             </a>
             <div class="text-center">
-                <a class="nav-link active text-center" id="inicio" aria-current="page" href="../index.php">Inicio</a>
+                <!-- <a class="nav-link active text-center" id="inicio" aria-current="page" href="../index.php">Inicio</a> -->
+                <a class="nav-link active text-center" href="../pages/logout.php">Cerrar Sesión</a>
+
             </div>
+        </div>
     </nav>
     <?php require "../lib/validar_login.php" ?>
+
+    <div class="container-fluid p-0">
+
+
+
+
+
+
+        <div class="left">
+            <div class="usuario">
+                <img class='img__usuario rounded-circle' src='../pages/<?php echo $_SESSION['imagen']; ?>' alt='foto-perfil'>
+            </div>
+            <div class="nombre__usuario">
+                <h4 class="text-center"><?php echo ucwords($_SESSION["nombre"]); ?></h4>
+            </div>
+        </div>
+    
+        <div class="right">
+            <div class="cabecera">
+                <div class="titulo">
+                    <h1>Administración</h1>
+                    <small>Bienvenido a la administración de usuarios</small>
+                </div>
+            </div>
+        </div>
+   
+   
+   
+   
+    </div>
+
+
+
     <div class="container-fluid caja rounded" id="">
         <div class="row">
             <div class="col-sm-6 caja col-center text-center rounded">
-                    <h1>Hola <?php echo ucwords($_SESSION["nombre"]); ?> Bienvenido a la Administración </h1>
-                    <img class='img-fluid img-thumbnail' height='750px' width='500px' src='../pages/<?php echo $_SESSION['imagen']; ?>' alt='foto-perfil'>
-                    <br>
-                    <a class="btn btn-primary rounded" href="../pages/logout.php">Salir</a>
+
             </div>
         </div>
 
