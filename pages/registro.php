@@ -28,12 +28,12 @@
 
                 <?php if ($form_ok) : ?>
 
-                    <h2>Saludos <?php echo $nombre ?></h2>
-                    <img class="img-fluid text-center" height="200px" width="150px" src="<?php echo $path_foto ?>" alt="foto-perfil">
-                    <p>Te has registrado con éxito, haz click en el botón para bloguearte!</p>
-                    <?php
-                     echo $path_foto . "desde registro!!<br>"; 
-                     ?>
+                    <div class="caja text-center">
+                        <h2>Saludos <?php echo $nombre ?></h2>
+                        <img class="img-fluid text-center" height="200px" width="150px" src="<?php echo $path_foto ?>" alt="foto-perfil">
+                        <p>Te has registrado con éxito, haz click en el botón para loguearte!</p>
+                        <a href="login.php" class="btn btn-primary rounded">Ingresa como soci@!</a>
+                    </div>
 
 
                 <?php else : ?>
@@ -67,7 +67,7 @@
 
                         <div class="input-group mb-3">
                             <p>Selecciona tu imagen de perfil (opcional)</p>
-                            <input name="foto" type="file" class="form-control" id="foto">
+                            <input name="foto" type="file" class="form-control rounded" id="foto">
                         </div>
                         <button type="submit" class="btn btn-primary rounded">Aceptar</button>
                         <a class="float-end" href="login.php">Ya estoy registrado</a>

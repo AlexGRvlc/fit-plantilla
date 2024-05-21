@@ -9,8 +9,6 @@
 </head>
 
 <body>
-
-
     <nav class="navbar navbar-expand-lg bg-body-tertiary" id="fondo_nav">
         <div class="container-fluid nav_bar">
             <a class="navbar-brand" href="../index.php">
@@ -18,7 +16,6 @@
             </a>
             <div class="text-center">
                 <a class="nav-link active text-center" id="inicio" aria-current="page" href="../index.php">Inicio</a>
-
             </div>
     </nav>
 

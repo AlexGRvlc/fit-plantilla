@@ -22,10 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $confirm_pass = $_POST['confirm-contrasena'];
     $saldo = $_POST['saldo'];
     $foto = $_FILES['foto'];
-    $foto_dir = "fotos/$nombre/";
-    $path_foto = "{$foto_dir}profile.jpg"; 
-
-    echo $path_foto . "desde validar registro";
 
     if ($nombre && $apellido && $email && $password && $confirm_pass && $saldo) {
         $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
@@ -47,20 +43,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-if ($password_ok){
-    if ($password == $confirm_pass) {
+if ($password_ok) {
+    if ($password === $confirm_pass) {
 
         $validar_email = $db->validarDatos('email', 'socios', $email);
 
-        if ($validar_email == 0) {
-
-            if (validar_foto($nombre)) {
+        if ($validar_email === 0) {
+            $path_foto = validar_foto($nombre);
+            if ($path_foto) {
                 $consulta = "INSERT INTO socios (nombre, apellido, contrasena, email, saldo, imagen) VALUES (?, ?, ?, ?, ?, ?)";
                 if ($db->preparar($consulta)) {
-                    $db->prep()->bind_param('sssssd', $nombre, $apellido, $password, $email, $saldo, $path_foto);
+                    $db->prep()->bind_param('ssssis', $nombre, $apellido, $password, $email, $saldo, $path_foto);
                     if ($db->ejecutar()) {
                         echo "Te has registrado con éxito!";
                         $form_ok = true;
+                        $db->cerrar();
                     } else {
                         echo "Error al ejecutar la consulta.";
                     }
@@ -77,6 +74,3 @@ if ($password_ok){
         echo "Las contraseñas no coinciden!";
     }
 }
-echo $path_foto . "desde validar registro" . "<br><br>";;
-
-?>

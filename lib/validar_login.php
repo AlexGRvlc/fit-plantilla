@@ -32,13 +32,14 @@ if ($_POST) {
             $db_contrasena = $resultado["contrasena"];
             $db_email = $resultado["email"];
             $db_path_foto = $resultado["imagen"];
-            
+
             if ($email === $db_email) {
 
                 if ($password === $db_contrasena) { // no necesario, para más seguridad
-                  echo  "<h1>Hola " .ucfirst($db_nombre) .  ucfirst($db_apellido) ." Bienbenido a la Administración</h1>";
-                   echo "<img class='img-fluid img-thumbnail' height='5000px' width='250px' src='../pages/fotos/$db_nombre/profile.jpg' alt='foto-perfil'>";
-                    
+                    $true_password = true;
+                    echo  "<h1>Hola " . ucfirst($db_nombre) .  ucfirst($db_apellido) . " Bienbenid@ a la Administración</h1>";
+                    echo "<img class='img-fluid img-thumbnail' height='500px' width='250px' src='../pages/" . $db_path_foto . "' alt='foto-perfil'>";
+                    $db->cerrar();
                 } else {
                     echo "Esta contraseña no coincide con la del usuario registrado.";
                 }

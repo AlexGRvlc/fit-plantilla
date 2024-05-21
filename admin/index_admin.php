@@ -20,15 +20,13 @@
             </div>
     </nav>
 
-    <h1 class="text-center">Admin</h1>
-
-    <div class="container-fluid" id="">
+    <div class="container-fluid caja rounded" id="">
         <div class="row">
             <div class="col-sm-6 caja col-center text-center rounded">
             <?php require_once "../lib/validar_login.php"; ?>
             <?php if ($true_password) : ?>
-                    <!-- <h1>Hola <?php ucfirst($db_nombre) . " " . ucfirst($db_apellido) ?> Bienbenido a la Administración</h1>
-                    <img class="img-fluid img-thumbnail" src='<?php echo "../pages/fotos/{$db_nombre}"; ?>' alt="foto-perfil"> -->
+                   
+                
                 </div>
             <?php else :
             endif; ?>
