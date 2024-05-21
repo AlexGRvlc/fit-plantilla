@@ -22,7 +22,7 @@
     <div class="container-fluid" id="fondo_login">
         <div class="row">
             <div class="col-sm-6 caja col-center rounded">
-                <form action="../admin/index_admin.php" method="POST" role="form" class="rounded">
+                <form action="../lib/validar_login.php" method="POST" role="form" class="rounded">
                     <legend class="text-center">Log In</legend>
                     <div class="form-group mb-3">
                         <input name="email" type="text" class="form-control" id="" placeholder="usuario">

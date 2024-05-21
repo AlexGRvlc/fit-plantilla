@@ -1,3 +1,17 @@
+<?php 
+
+session_start();
+
+if (!$_SESSION['id_socio'] && !$_SESSION['nombre']){
+    header ("Location: ../pages/login.php");
+    exit;
+}
+
+$nombre = $_SESSION['nombre'];
+$imagen = $_SESSION['imagen'];
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -19,17 +33,14 @@
                 <a class="nav-link active text-center" id="inicio" aria-current="page" href="../index.php">Inicio</a>
             </div>
     </nav>
-
+    <?php require "../lib/validar_login.php" ?>
     <div class="container-fluid caja rounded" id="">
         <div class="row">
             <div class="col-sm-6 caja col-center text-center rounded">
-            <?php require_once "../lib/validar_login.php"; ?>
-            <?php if ($true_password) : ?>
-                   
-                
-                </div>
-            <?php else :
-            endif; ?>
+                    <h1>Hola <?php echo ucwords($_SESSION["nombre"]); ?> Bienvenido a la Administración </h1>
+                    <img class='img-fluid img-thumbnail' height='750px' width='500px' src='../pages/<?php echo $_SESSION['imagen']; ?>' alt='foto-perfil'>
+
+            </div>
         </div>
 
     </div>
