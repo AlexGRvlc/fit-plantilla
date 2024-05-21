@@ -38,7 +38,7 @@
 
                 <?php else : ?>
 
-                    <form action="" enctype="multipart/form-data" method="POST" role="form" class="rounded">
+                    <form action="" enctype="multipart/form-data" method="POST" role="form" class="rounded" id="registro_form">
                         <legend class="text-center">Registro</legend>
 
                         <div class="form-group mb-3">

@@ -40,6 +40,14 @@ if ($_POST) {
                     $_SESSION['nombre'] = $db_nombre_completo;
                     $_SESSION['imagen'] = $db_path_foto;
 
+                    $caduca = time()+365*24*60*60;
+
+                    if ( $_POST['sesion_activa'] === 'activo' ){
+                        setcookie('id', $_SESSION['id_socio'], $caduca, "/");
+                        setcookie('nombre', $_SESSION['nombre'], $caduca, "/");
+                        setcookie('img', $_SESSION['imagen'], $caduca, "/");
+                    }
+
                     $db->cerrar();
                     header ("Location: ../sesiones/admin.php");
                     

@@ -3,7 +3,7 @@
 session_start();
 
 if (!$_SESSION['id_socio'] && !$_SESSION['nombre']){
-    header ("Location: ../pages/login.php");
+    header ("Location: ../index.php");
     exit;
 }
 
@@ -39,7 +39,8 @@ $imagen = $_SESSION['imagen'];
             <div class="col-sm-6 caja col-center text-center rounded">
                     <h1>Hola <?php echo ucwords($_SESSION["nombre"]); ?> Bienvenido a la Administración </h1>
                     <img class='img-fluid img-thumbnail' height='750px' width='500px' src='../pages/<?php echo $_SESSION['imagen']; ?>' alt='foto-perfil'>
-
+                    <br>
+                    <a class="btn btn-primary rounded" href="../pages/logout.php">Salir</a>
             </div>
         </div>
 

@@ -1,3 +1,19 @@
+<?php
+
+session_start();
+
+if ((isset($_SESSION['nombre']) && ($_SESSION['id_socio'])) || isset($_COOKIE['nombre'])) {
+
+    if (isset($_COOKIE['nombre'])) {
+        $_SESSION['id_socio'] = $_COOKIE['id'];
+        $_SESSION['nombre'] = $_COOKIE['nombre'];
+        $_SESSION['imagen'] = $_COOKIE['img'];
+    }
+
+    header("Location: ../sesiones/admin.php");
+}
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -21,7 +37,7 @@
 
     <div class="container-fluid" id="fondo_login">
         <div class="row">
-            <div class="col-sm-6 caja col-center rounded">
+            <div class="col-sm-4 caja col-center rounded" id="login-form">
                 <form action="../lib/validar_login.php" method="POST" role="form" class="rounded">
                     <legend class="text-center">Log In</legend>
                     <div class="form-group mb-3">
@@ -31,8 +47,11 @@
                     <div class="form-group mb-3">
                         <input name="password" type="password" class="form-control" id="password" placeholder="contraseña">
                     </div>
-                    <button type="submit" class="btn btn-primary rounded">Ingresar</button>
+                    <button type="submit" class="btn btn-primary rounded me-3">Ingresar</button>
                     <a class="float-end" href="registro.php">Registrarse</a>
+                    <label for="sesion_activa" class="checkbox-inline">
+                        <input name="sesion_activa" type="checkbox" value="activo"> Mantener sesión iniciada
+                    </label>
                 </form>
             </div>
         </div>
