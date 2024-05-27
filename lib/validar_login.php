@@ -22,7 +22,8 @@ if ($_POST) {
         $validar_email = $db->validarDatos('email', 'socios', $email);
 
         if ($validar_email !== 0) {
-            $db->preparar("SELECT id_socio, CONCAT (nombre, ' ', apellido)  AS nombre_completo, contrasena, email, imagen FROM socios WHERE email = '$email'");
+            $fecha = time();
+            $db->preparar("SELECT id_socio, CONCAT (nombre, ' ', apellido)  AS nombre_completo, contrasena, email, imagen, fecha FROM socios WHERE email = '$email'");
             $db->ejecutar();
             $resultado = $db->resultado();
 

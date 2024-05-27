@@ -72,6 +72,10 @@ class Database {
         return $this->resultado->num_rows;
     }
 
+    public function despejar(){
+        $this->prep->free_result();
+    }
+
     public function cerrar(){
         $this->db->close();
         $this->prep->close();
