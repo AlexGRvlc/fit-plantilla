@@ -10,6 +10,15 @@ if (!$_SESSION['id_socio'] && !$_SESSION['nombre']) {
 $nombre = $_SESSION['nombre'];
 $imagen = $_SESSION['imagen'];
 
+$fecha = getdate();
+$dia_date = date("d");
+$anyo = date("Y");
+$meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+$dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+$dia = $dias[$fecha["wday"]];
+$mes = $meses[$fecha["mon"]-1];
+
+
 ?>
 
 <!DOCTYPE html>
@@ -20,6 +29,7 @@ $imagen = $_SESSION['imagen'];
     <title>FitGim | Admin</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
@@ -60,6 +70,75 @@ $imagen = $_SESSION['imagen'];
                     <h1>Administración</h1>
                     <small>Bienvenido a la administración de usuarios</small>
                 </div>
+                <div class="fecha float-end">
+                    <i class="bi bi-calendar3"></i>
+                    <span><?php echo "$dia $dia_date $mes, $anyo"; ?></span>
+                </div>
+            </div>
+
+
+
+            <div class="container-fluid " id="panel">
+                <div class="row" id="paneles">
+    
+                    <div class="col-lg-3 col-md-3 col-sm-6">
+                        <div class="panel">
+                            <div class="icono  i_red">
+                            <i class="bi bi-people"></i>
+                            </div>
+                            <div class="valor">
+                                <h1 class="cantidad_socios">152</h1>
+                                <p>Socios</p>
+                            </div>
+                        </div>    
+                    </div>
+    
+                    <div class="col-lg-3 col-md-3 col-sm-6">
+                        <div class="panel">
+                            <div class="icono  i_blue">
+                            <i class="bi bi-people"></i>
+                            </div>
+                            <div class="valor">
+                                <h1 class="cantidad_socios">152</h1>
+                                <p>Socios</p>
+                            </div>
+                        </div>    
+                    </div>
+    
+                    <div class="col-lg-3 col-md-3 col-sm-6">
+                        <div class="panel">
+                            <div class="icono  i_green">
+                            <i class="bi bi-people"></i>
+                            </div>
+                            <div class="valor">
+                                <h1 class="cantidad_socios">152</h1>
+                                <p>Socios</p>
+                            </div>
+                        </div>    
+                    </div>
+    
+                    <div class="col-lg-3 col-md-3 col-sm-6">
+                        <div class="panel">
+                            <div class="icono  i_yellow">
+                            <i class="bi bi-people"></i>
+                            </div>
+                            <div class="valor">
+                                <h1 class="cantidad_socios">152</h1>
+                                <p>Socios</p>
+                            </div>
+                        </div>    
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="caja">
+                                <div class="caja-cabecera"> 
+                                    <h1>Últimos usuarios registrados</h1>
+                                </div>
+                                <div class="caja-cuerpo"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
             </div>
         </div>
    
@@ -70,13 +149,5 @@ $imagen = $_SESSION['imagen'];
 
 
 
-    <div class="container-fluid caja rounded" id="">
-        <div class="row">
-            <div class="col-sm-6 caja col-center text-center rounded">
-
-            </div>
-        </div>
-
-    </div>
 
     <?php require '../inc/footer.inc'; ?>

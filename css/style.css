@@ -188,3 +188,62 @@ input {
 .cabecera {
   padding: 30px;
 }
+
+.titulo {
+  display: inline-block;
+  /* margin-top: 0 !important; */
+}
+
+/* .fecha {
+  padding: 10px 20px;
+  background-color: #fafafa;
+} */
+
+#paneles {
+  margin-top: 25px;
+}
+
+.panel  {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.i_red {
+  background-color: rgb(255, 0, 0);
+}
+
+.i_blue {
+  background-color: rgb(0, 81, 255);
+}
+
+.i_green {
+  background-color: rgb(60, 255, 0);
+}
+
+.i_yellow {
+  background-color: rgb(179, 179, 6);
+}
+
+.icono {
+  width: 30%;
+  padding: 25px 15px;
+  display: inline-block;
+  text-align: center;
+}
+
+.icono i {
+  font-size: 55px;
+  color: white;
+}
+
+.valor {
+  width: 70%; 
+  padding-top: 20px;
+  float: right;
+  text-align: center;
+}
+
+.valor h1 {
+  margin: 0 !important;  
+}
