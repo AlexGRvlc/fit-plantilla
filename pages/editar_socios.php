@@ -108,47 +108,50 @@ $db->despejar();
                         <?php
 
                         $id = $_GET["editar"];
+                        
+                        if (isset($_GET["editar"])) {
+                            $id = $_GET["editar"];
+                        
+                            // Obtener los datos del socio a editar
+                            $datos_socio = $db->getSocioPorId($id);
+                        
+                            // Vincular los datos obtenidos al formulario
+                            $editar_nombre = $datos_socio['nombre'];
+                            $editar_apellido = $datos_socio['apellido'];
+                            $editar_email = $datos_socio['email'];
+                            $editar_saldo = $datos_socio['saldo'];
+                            $editar_imagen = $datos_socio['imagen'];
+                        }
+                        
 
-                        $db->preparar("SELECT 
-                                        nombre,
-                                        apellido, 
-                                        email, 
-                                        saldo, 
-                                        imagen 
-                                        FROM socios
-                                        WHERE id_socio = ?");
-                        $db->prep()->bind_param('i', $id);
-                        $db->ejecutar();
-                        $db->prep()->bind_result(
-                            $editar_nombre,
-                            $editar_apellido,
-                            $editar_email,
-                            $editar_saldo,
-                            $editar_imagen
-                        );
-                        $db->resultado();
-                        // $db_despejar();
+
+
+                        // $db->despejar();
 
 
                         ?>
 
-                        <form action="" enctype="multipart/form-data" method="POST" role="form" class="rounded" id="registro_form">
+                        <form action="../lib/actualizar_socio.php" enctype="multipart/form-data" method="POST" role="form" class="rounded" id="registro_form">
                             <legend class="text-center">Editar Socio</legend>
 
                             <div class="form-group mb-3">
-                                <input name="nombre" id="nombre" type="text" class="form-control" id="" placeholder="<?php echo $editar_nombre; ?>" require>
+                                <input name="id" id="id" type="hidden" class="form-control" value="<?php echo $id; ?>">
                             </div>
 
                             <div class="form-group mb-3">
-                                <input name="apellido" type="text" class="form-control" id="" placeholder="<?php echo $editar_apellido; ?>" require>
+                                <input name="nombre" id="nombre" type="text" class="form-control" value="<?php echo $editar_nombre; ?>">
                             </div>
 
                             <div class="form-group mb-3">
-                                <input name="email" type="mail" class="form-control" id="" placeholder="<?php echo $editar_email; ?>" require>
+                                <input name="apellido" type="text" class="form-control" id="" value="<?php echo $editar_apellido; ?>">
                             </div>
 
                             <div class="form-group mb-3">
-                                <input name="saldo" type="number" min="50" class="form-control" id="" placeholder="<?php echo $editar_saldo; ?> Saldo" require>
+                                <input name="email" type="mail" class="form-control" id="" value="<?php echo $editar_email; ?>">
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <input name="saldo" type="number" min="50" class="form-control" id="" placeholder="saldo" value="<?php echo $editar_saldo; ?>">
                             </div>
 
                             <div class="input-group mb-3">
@@ -161,6 +164,7 @@ $db->despejar();
                         </form>
                     </div>
                 </div>
+
 
             <?php else : ?>
 
@@ -216,7 +220,7 @@ $db->despejar();
                                             </tr>";
                                         }
 
-                                        // $db_despejar();  !error fatal!!
+                                        $db->despejar();
 
                                         ?>
                                     </tbody>
@@ -232,13 +236,5 @@ $db->despejar();
     </div>
 
     </div>
-
-
-
-
     </div>
-
-
-
-
     <?php require '../inc/footer.inc'; ?>

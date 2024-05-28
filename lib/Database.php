@@ -60,6 +60,19 @@ class Database {
         return $this->resultado->fetch_assoc();
     }
 
+    public function getSocioPorId($id) {
+        $this->prep = $this->db->prepare("SELECT nombre, apellido, email, saldo, imagen FROM socios WHERE id_socio = ?");
+        $this->prep->bind_param('i', $id);
+        if ($this->prep->execute()) {
+            $this->resultado = $this->prep->get_result();
+            return $this->resultado->fetch_assoc();
+        } else {
+            trigger_error("Error al ejecutar la consulta: " . $this->prep->error, E_USER_ERROR);
+            return false;
+        }
+    }
+    
+
     public function cambiarDatabase($db) {
         $this->db->select_db($db);
     }
@@ -75,11 +88,11 @@ class Database {
     public function despejar(){
         if ($this->resultado) {
             $this->resultado->free();
-            // $this->resultado = null; 
+            $this->resultado = null; 
         }
         if ($this->prep) {
             $this->prep->close();
-            // $this->prep = null;
+            $this->prep = null;
         }
     }
 

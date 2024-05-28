@@ -1,12 +1,16 @@
 <?php
-function validar_foto($nombre)
+function validar_foto($nombre, $update = false)
 {
-    $foto = $_FILES['foto'];
 
+    
+    
+    $foto = $_FILES['foto'];
+    
     global $foto_dir;
     global $path_foto;
     // global $error;
-
+   
+    
     $foto_dir = "fotos/$nombre/"; // Directorio donde se guardarán las fotos
     $path_foto = "{$foto_dir}profile.jpg"; // ruta de guardado
     $tmp_name = $foto['tmp_name'];
@@ -14,6 +18,7 @@ function validar_foto($nombre)
     $extensiones_validas = ["jpeg", "jpg", "png", "webp"];
     $nombre_foto = $foto['name'];
     $exFile = preg_replace('/image\//', '', $foto['type']);
+    
 
     if (in_array($extension_archivo, $extensiones_validas)) {
         // Mover la foto al directorio del usuario
