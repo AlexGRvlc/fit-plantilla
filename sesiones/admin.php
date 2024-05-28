@@ -5,6 +5,7 @@ ini_set('display_errors', 1);
 session_start();
 
 require_once "../lib/config_conexion.php";
+require_once "../lib/date.php";
 
 spl_autoload_register(function ($clase) {
     require_once "../lib/$clase.php";
@@ -15,35 +16,28 @@ if (!$_SESSION['id_socio'] && !$_SESSION['nombre']) {
     exit;
 }
 
-$nombre = $_SESSION['nombre'];
-$imagen = $_SESSION['imagen'];
-
-$fecha = getdate();
-$dia_date = date("d");
-$anyo = date("Y");
-$meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-$dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-$dia = $dias[$fecha["wday"]];
-$mes = $meses[$fecha["mon"] - 1];
-
-// echo time() . "<br>";
-
 $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-$sesion_id = $_SESSION["id_socio"];
+$socio_id = $_SESSION["id_socio"];
 
 $db->preparar("SELECT 
                 id_socio,
-                CONCAT (nombre, ' ', apellido)  AS nombre_completo,
+                CONCAT(nombre, ' ', apellido) AS nombre_completo,
                 imagen
                 FROM socios
-                WHERE id_socio = {$_SESSION['id_socio']}" );
+                WHERE id_socio = ?");
 
-// $db->prep()->bind_param('i', $sesion_id);
+$db->prep()->bind_param('i', $socio_id);
 $db->ejecutar();
-$db->prep()->bind_result($sesion_id, $nombre_socio, $imagen_socio);
-$db->resultado();
+
+$resultado = $db->resultado();
+
+$sesion_id = $resultado['id_socio'];
+$nombre_socio = $resultado['nombre_completo'];
+$imagen_socio = $resultado['imagen'];
+
 $db->despejar();
+
 
 $db->preparar("SELECT 
                 CONCAT (nombre, ' ', apellido)  AS nombre_completo, 
@@ -53,13 +47,7 @@ $db->preparar("SELECT
                 FROM socios 
                 ORDER BY fecha DESC LIMIT 10 ");
 $db->ejecutar();
-echo $nombre_socio . "holaaaaa<br>";
-echo $nombre . "holaaaaa<br>";
-echo $nombre_socio . "holaaaaa<br>";
-echo $nombre_socio . "holaaaaa<br>";
-echo $nombre . "holaaaaa<br>";
-echo $nombre_socio . "holaaaaa<br>";
-echo $nombre_socio . "holaaaaa<br>";
+
 ?>
 
 <!DOCTYPE html>
@@ -80,6 +68,9 @@ echo $nombre_socio . "holaaaaa<br>";
             <a class="navbar-brand" href="../index.php">
                 <img src="../public/img/logo.webp" alt="logo" />
             </a>
+            <a href="../pages/editar_socios.php">
+                <i class="bi bi-box-arrow-in-up-right">Editar</i>
+            </a>
             <div class="text-center">
                 <!-- <a class="nav-link active text-center" id="inicio" aria-current="page" href="../index.php">Inicio</a> -->
                 <a class="nav-link active text-center" href="../pages/logout.php">Cerrar Sesión</a>
@@ -98,10 +89,10 @@ echo $nombre_socio . "holaaaaa<br>";
 
         <div class="left">
             <div class="usuario">
-                <img class='img__usuario rounded-circle' src='../pages/<?php echo $imagen; ?>' alt='foto-perfil'>
+                <img class='img__usuario rounded-circle' src='../pages/<?php echo $imagen_socio; ?>' alt='foto-perfil'>
             </div>
             <div class="nombre__usuario">
-                <h4 class="text-center"><?php echo ucwords($nombre); ?></h4>
+                <h4 class="text-center"><?php echo ucwords($nombre_socio); ?></h4>
             </div>
         </div>
 

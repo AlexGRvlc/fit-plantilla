@@ -51,9 +51,10 @@ if ($password_ok) {
         if ($validar_email === 0) {
             $path_foto = validar_foto($nombre);
             if ($path_foto) {
-                $consulta = "INSERT INTO socios (nombre, apellido, contrasena, email, saldo, imagen) VALUES (?, ?, ?, ?, ?, ?)";
+                $fecha = time();
+                $consulta = "INSERT INTO socios (nombre, apellido, contrasena, email, saldo, imagen, fecha) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 if ($db->preparar($consulta)) {
-                    $db->prep()->bind_param('ssssis', $nombre, $apellido, $password, $email, $saldo, $path_foto);
+                    $db->prep()->bind_param('ssssisi', $nombre, $apellido, $password, $email, $saldo, $path_foto, $fecha);
                     if ($db->ejecutar()) {
                         echo "Te has registrado con éxito!";
                         $form_ok = true;

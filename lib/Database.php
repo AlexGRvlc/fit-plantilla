@@ -73,7 +73,14 @@ class Database {
     }
 
     public function despejar(){
-        $this->prep->free_result();
+        if ($this->resultado) {
+            $this->resultado->free();
+            // $this->resultado = null; 
+        }
+        if ($this->prep) {
+            $this->prep->close();
+            // $this->prep = null;
+        }
     }
 
     public function cerrar(){

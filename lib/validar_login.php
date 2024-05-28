@@ -1,6 +1,11 @@
-<?php session_start(); ?>
+<!-- <?php session_start(); ?>  -->
 
 <?php
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -22,8 +27,9 @@ if ($_POST) {
         $validar_email = $db->validarDatos('email', 'socios', $email);
 
         if ($validar_email !== 0) {
-            $fecha = time();
-            $db->preparar("SELECT id_socio, CONCAT (nombre, ' ', apellido)  AS nombre_completo, contrasena, email, imagen, fecha FROM socios WHERE email = '$email'");
+            // $fecha = time();
+            $db->preparar("SELECT id_socio, CONCAT (nombre, ' ', apellido)  AS nombre_completo, contrasena, email, imagen, fecha FROM socios WHERE email = ?");
+            $db->prep()->bind_param('s', $email);
             $db->ejecutar();
             $resultado = $db->resultado();
 
