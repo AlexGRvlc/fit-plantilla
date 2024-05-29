@@ -16,9 +16,8 @@ if (isset($_POST["id"])) {
     $apellido_actualizado = $_POST["apellido"];
     $email_actualizado = $_POST["email"];
     $saldo_actualizado = $_POST["saldo"];
+    $foto  = $_FILES["foto"];
 
-    $foto_actualizada = validar_foto($id, true);
-    
     $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     $consulta = "UPDATE socios
@@ -28,13 +27,13 @@ if (isset($_POST["id"])) {
                      saldo = ?
                  WHERE id_socio = ?";
 
-    $db->preparar($consulta);
+    $db->setConsulta($consulta);
 
-    if ($db->prep() === false) {
-        echo "Error al preparar la consulta: " ;
+    if ($db->setParam() === false) {
+        echo "Error al preparar la consulta: ";
     }
 
-    $db->prep()->bind_param(
+    $db->setParam()->bind_param(
         'sssii',
         $nombre_actualizado,
         $apellido_actualizado,
@@ -43,19 +42,44 @@ if (isset($_POST["id"])) {
         $id
     );
 
-    if ($db->prep()->errno) {
-        echo "Error al asignar parámetros: " ;
-    }
+    if ($foto["name"]) {
+        if (validar_foto($nombre_actualizado, true)) {
+            if ($db->setParam()->errno) {
+                echo "Error al asignar parámetros: ";
+            }
 
-    if ($db->ejecutar()) {
-        echo "¡Actualización exitosa!";
-        header("Refresh:2; url=../pages/editar_socios.php");
+            if ($db->ejecutar()) {
+
+                echo "¡Actualización exitosa!";
+                header("Refresh:2; url=../pages/editar_socios.php");
+            } else {
+                echo "Error al ejecutar la consulta: ";
+            }
+
+            $db->despejar();
+        }
     } else {
-        echo "Error al ejecutar la consulta: ";
+
+        if ($db->setParam()->errno) {
+            echo "Error al asignar parámetros: ";
+        }
+
+        if ($db->ejecutar()) {
+
+            echo "¡Actualización exitosa!";
+            header("Refresh:2; url=../pages/editar_socios.php");
+        } else {
+            echo "Error al ejecutar la consulta: ";
+        }
+
+        $db->despejar();
     }
-    
-    $db->despejar();
 } else {
     echo "Error: ID no recibido.";
 }
 ?>
+<br>
+<br>
+<br>
+<br>
+<a href="../pages/editar_socios.php">volver a editar_socios.php</a>

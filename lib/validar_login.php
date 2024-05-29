@@ -28,10 +28,10 @@ if ($_POST) {
 
         if ($validar_email !== 0) {
             // $fecha = time();
-            $db->preparar("SELECT id_socio, CONCAT (nombre, ' ', apellido)  AS nombre_completo, contrasena, email, imagen, fecha FROM socios WHERE email = ?");
-            $db->prep()->bind_param('s', $email);
+            $db->setConsulta("SELECT id_socio, CONCAT (nombre, ' ', apellido)  AS nombre_completo, contrasena, email, imagen, fecha FROM socios WHERE email = ?");
+            $db->setParam()->bind_param('s', $email);
             $db->ejecutar();
-            $resultado = $db->resultado();
+            $resultado = $db->getResultado();
 
             $db_id_socio = $resultado["id_socio"];
             $db_nombre_completo = $resultado["nombre_completo"];

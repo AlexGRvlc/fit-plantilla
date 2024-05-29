@@ -1,13 +1,16 @@
 <?php
 require "../lib/errores.php";
 
-class Database {
+class Database
+{
     public $db;
-    protected $resultado;
-    protected $prep;
     protected $consulta;
+    protected $param;
+    protected $resultado;
 
-    public function __construct($db_host, $db_user, $db_pass, $db_name) {
+    // Función constructora
+    public function __construct($db_host, $db_user, $db_pass, $db_name)
+    {
         $this->db = new mysqli($db_host, $db_user, $db_pass, $db_name);
 
         if ($this->db->connect_errno) {
@@ -17,19 +20,28 @@ class Database {
         $this->db->set_charset(DB_CHARSET);
     }
 
-    public function getSocios() {
-        $this->resultado = $this->db->query("SELECT * FROM socios;");
-        return $this->resultado->fetch_all(MYSQLI_ASSOC);
+    // Obtiene todos los datos de la tabla socios
+    // No requiere de ningún parámetro
+    public function getSocios()
+    {
+        $this->resultado = $this->db->query("SELECT * FROM socios;"); // instancia $resultado
+        return $this->resultado->fetch_all(MYSQLI_ASSOC); // Devuelte todas las filas consultadas en un 
+        // array asociativo, numérico o ambos.
     }
 
-    public function getCliente() {
+    // Obtiene un cliente en array asociativo
+    public function getSocio()
+    {
         return $this->resultado->fetch_assoc();
     }
 
-    public function preparar($consulta) {
-        $this->consulta = $consulta;
-        $this->prep = $this->db->prepare($this->consulta);
-        if (!$this->prep) {
+    // Prepara la consulta a la base de datos
+    // con parametros proporcionados en param
+    public function setConsulta($consulta)
+    {
+        $this->consulta = $consulta;            // se instancia la variable $consulta
+        $this->param = $this->db->prepare($this->consulta); // db llama a prepare
+        if (!$this->param) {
             trigger_error("Error al preparar la consulta: " . $this->db->error, E_USER_ERROR);
             return false;
         } else {
@@ -37,47 +49,89 @@ class Database {
         }
     }
 
-    public function ejecutar() {
-        if ($this->prep === null) {
-            trigger_error("Error: Consulta no preparada", E_USER_ERROR);
-            return false;
-        }
-        
-        if ($this->prep->execute()) {
-            $this->resultado = $this->prep->get_result();
-            return true;
-        } else {
-            trigger_error("Error al ejecutar la consulta: " . $this->prep->error, E_USER_ERROR);
-            return false;
-        }
+    // agrega los parametro/s a la variable param
+    public function setParam()
+    {
+        return $this->param;
     }
 
-    public function prep() {
-        return $this->prep;
-    }
-
-    public function resultado() {
+    // Devuelte una fila de un resultado de la consulta 
+    // como un array asociativo
+    public function getResultado()
+    {
         return $this->resultado->fetch_assoc();
     }
 
-    public function getSocioPorId($id) {
-        $this->prep = $this->db->prepare("SELECT nombre, apellido, email, saldo, imagen FROM socios WHERE id_socio = ?");
-        $this->prep->bind_param('i', $id);
-        if ($this->prep->execute()) {
-            $this->resultado = $this->prep->get_result();
+    // Obtiene todos los datos de un socio por su id
+    // 
+    public function getSocioPorId($id)
+    {
+        $this->param = $this->db->prepare("SELECT nombre, 
+                                                  apellido, 
+                                                  email, 
+                                                  saldo, 
+                                                  imagen 
+                                                  FROM socios 
+                                                  WHERE id_socio = ?");
+        $this->param->bind_param('i', $id);
+        if ($this->param->execute()) {
+            $this->resultado = $this->param->get_result();
             return $this->resultado->fetch_assoc();
         } else {
-            trigger_error("Error al ejecutar la consulta: " . $this->prep->error, E_USER_ERROR);
+            trigger_error("Error al ejecutar la consulta: " . $this->param->error, E_USER_ERROR);
             return false;
         }
     }
-    
 
-    public function cambiarDatabase($db) {
-        $this->db->select_db($db);
+    // ejecuta la consulta a la bd
+    public function ejecutar()
+    {
+        if ($this->param === null) {
+            trigger_error("Error: Consulta no preparada", E_USER_ERROR);
+            return false;
+        }
+
+        if ($this->param->execute()) {
+            $this->resultado = $this->param->get_result();
+            return true;
+        } else {
+            trigger_error("Error al ejecutar la consulta: " . $this->param->error, E_USER_ERROR);
+            return false;
+        }
     }
 
-    public function validarDatos($columna, $tabla, $condicion) {
+    // Devuelve la/s fila/s sobre la que 
+    // se aplique algún cambio
+    public function getFilasAfectadas(){
+        return $this->param->affected_rows;
+    }
+
+    // Libera la memoria asociada a un 
+    // resultado 
+    public function despejar()
+    {
+        if ($this->resultado) {
+            $this->resultado->free();
+            $this->resultado = null;
+        }
+        if ($this->param) {
+            $this->param->close();
+            $this->param = null;
+        }
+    }
+    // Cierra la conexión abierta de una BD
+    // instanciada
+    public function cerrar()
+    {
+        $this->db->close();
+        $this->param->close();
+    }
+
+    // Confirma la existencia de una columna concreta
+    // dada una condición
+    // Devuelve un integer con el número de filas
+    public function validarDatos($columna, $tabla, $condicion)
+    {
         $stmt = $this->db->prepare("SELECT $columna FROM $tabla WHERE $columna = ?");
         $stmt->bind_param('s', $condicion);
         $stmt->execute();
@@ -85,20 +139,9 @@ class Database {
         return $this->resultado->num_rows;
     }
 
-    public function despejar(){
-        if ($this->resultado) {
-            $this->resultado->free();
-            $this->resultado = null; 
-        }
-        if ($this->prep) {
-            $this->prep->close();
-            $this->prep = null;
-        }
-    }
-
-    public function cerrar(){
-        $this->db->close();
-        $this->prep->close();
+    // Posibilita el cambio de una BD a otra
+    public function cambiarDatabase($db)
+    {
+        $this->db->select_db($db);
     }
 }
-?>

@@ -1,42 +1,47 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once "borrar_foto.php";
+
 function validar_foto($nombre, $update = false)
 {
-
-    
-    
     $foto = $_FILES['foto'];
-    
     global $foto_dir;
     global $path_foto;
-    // global $error;
-   
-    
-    $foto_dir = "fotos/$nombre/"; // Directorio donde se guardarán las fotos
-    $path_foto = "{$foto_dir}profile.jpg"; // ruta de guardado
+
+    $foto_dir = "../pages/fotos/$nombre/"; // Directorio donde se guardarán las fotos
+    $path_foto = "{$foto_dir}profile.jpg"; // Ruta de guardado
     $tmp_name = $foto['tmp_name'];
     $extension_archivo = pathinfo($foto["name"], PATHINFO_EXTENSION);
     $extensiones_validas = ["jpeg", "jpg", "png", "webp"];
-    $nombre_foto = $foto['name'];
-    $exFile = preg_replace('/image\//', '', $foto['type']);
-    
+
+
+
+    if ($update) {
+        $dir = $foto_dir;
+        borrarFoto($dir);
+    }
 
     if (in_array($extension_archivo, $extensiones_validas)) {
-        // Mover la foto al directorio del usuario
-        // Verificar y crear directorio si no existe
-        if (!file_exists("../fotos")) {
-            mkdir("../fotos", 0755, true);
+
+        if (!file_exists("../pages/fotos")) {
+            mkdir("../pages/fotos", 0755, true);
+            echo "Directorio ../pages/fotos creado.<br>";
         }
         if (!file_exists($foto_dir)) {
             mkdir($foto_dir, 0755, true);
+            echo "Directorio $foto_dir creado.<br>";
         }
         if (move_uploaded_file($tmp_name, $path_foto)) {
             return $path_foto;
         } else {
-            echo "Error al mover el archivo.";
+            echo "Error al mover el archivo.<br>";
+            return false;
         }
     } else {
-         echo "Tipo de archivo no válido. Se admiten archivos JPEG, PNG y WebP.";
+        echo "Tipo de archivo no válido. Se admiten archivos JPEG, PNG y WebP.<br>";
+        return false;
     }
-    echo $path_foto ."desde validar foto<br>";
-    return false;
 }

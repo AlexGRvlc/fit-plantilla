@@ -6,6 +6,8 @@ session_start();
 
 require_once "../lib/config_conexion.php";
 require_once "../lib/date.php";
+require_once "../lib/validar_foto.php";
+require_once "../lib/borrar_foto.php";
 
 spl_autoload_register(function ($clase) {
     require_once "../lib/$clase.php";
@@ -20,17 +22,17 @@ $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 $socio_id = $_SESSION["id_socio"];
 
-$db->preparar("SELECT 
+$db->setConsulta("SELECT 
                 id_socio,
                 CONCAT(nombre, ' ', apellido) AS nombre_completo,
                 imagen
                 FROM socios
                 WHERE id_socio = ?");
 
-$db->prep()->bind_param('i', $socio_id);
+$db->setParam()->bind_param('i', $socio_id);
 $db->ejecutar();
 
-$resultado = $db->resultado();
+$resultado = $db->getResultado();
 
 $sesion_id = $resultado['id_socio'];
 $nombre_socio = $resultado['nombre_completo'];
@@ -59,8 +61,8 @@ $db->despejar();
             <a class="navbar-brand" href="../index.php">
                 <img src="../public/img/logo.webp" alt="logo" />
             </a>
-            <a href="editar_socios.php">
-                <i class="bi bi-box-arrow-in-up-right">Editar</i>
+            <a href="../sesiones/admin.php">
+                <i class="bi bi-box-arrow-in-up-right">Administración</i>
             </a>
             <div class="text-center">
                 <!-- <a class="nav-link active text-center" id="inicio" aria-current="page" href="../index.php">Inicio</a> -->
@@ -72,11 +74,6 @@ $db->despejar();
     <?php require "../lib/validar_login.php" ?>
 
     <div class="container-fluid p-0">
-
-
-
-
-
 
         <div class="left">
             <div class="usuario">
@@ -104,17 +101,16 @@ $db->despejar();
                 <div class="row">
                     <div class="col-sm-5">
 
-
                         <?php
 
                         $id = $_GET["editar"];
-                        
+
                         if (isset($_GET["editar"])) {
-                            $id = $_GET["editar"];
-                        
+                            $id = $_GET["editar"];  // Redundante!
+
                             // Obtener los datos del socio a editar
                             $datos_socio = $db->getSocioPorId($id);
-                        
+
                             // Vincular los datos obtenidos al formulario
                             $editar_nombre = $datos_socio['nombre'];
                             $editar_apellido = $datos_socio['apellido'];
@@ -122,12 +118,7 @@ $db->despejar();
                             $editar_saldo = $datos_socio['saldo'];
                             $editar_imagen = $datos_socio['imagen'];
                         }
-                        
-
-
-
-                        // $db->despejar();
-
+                        $db->despejar();
 
                         ?>
 
@@ -160,8 +151,68 @@ $db->despejar();
                             </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary rounded">Actualizar</button>
+                                <a href="editar_socios.php" class="btn btn-warning rounded">Cancelar</a>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+
+            <?php elseif (isset($_GET["confir_eliminar"])) : ?>
+
+                <div class="row justify-content-center">
+                    <div class="col-sm-5">
+                        <div class="caja text-center ">
+                            <h2>¿Seguro deseas eliminarlo?</h2>
+                            <a class="btn btn-danger" href='<?php echo "editar_socios.php?eliminar={$_GET['confir_eliminar']}"; ?>'>Sí</a>
+                            <a class="btn btn-warning" href="editar_socios.php">No</a>
+                        </div>
+                    </div>
+                </div>
+
+            <?php elseif (isset($_GET["eliminar"])) : ?>
+
+                <div class="row justify-content-center">
+                    <div class="col-sm-5">
+                        <div class="caja text-center ">
+
+                            <?php
+
+                            $eliminar_id_socio = $_GET["eliminar"];
+
+                            $db->setConsulta("SELECT 
+                                                nombre
+                                                FROM socios
+                                                WHERE id_socio = ?");
+
+                            $db->setParam()->bind_param('i', $eliminar_id_socio);
+                            $db->ejecutar();
+                            $resultado = $db->getResultado();
+                            $name = $resultado['nombre'];
+                            $db->despejar();
+
+
+                            $db->setConsulta("DELETE 
+                                                FROM socios 
+                                                WHERE id_socio = ?");
+
+                            $db->setParam()->bind_param('i', $eliminar_id_socio);
+                            $db->ejecutar();
+
+                            if ($db->getFilasAfectadas() > 0) {
+                                echo "Socio eliminado";
+
+                                // header("Refresh:2; url=editar_socios.php");
+                                borrarFoto("../pages/fotos/$name");
+
+                            }
+
+                            $db->despejar();
+
+                            ?>
+
+
+                        </div>
                     </div>
                 </div>
 
@@ -188,23 +239,39 @@ $db->despejar();
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    <?php
+
+                                    $db->setConsulta("SELECT
+                                                        COUNT(id_socio)
+                                                        FROM socios");
+                                    $db->ejecutar();
+                                    $db->setParam()->bind_result( $contador_socios);
+                                    $db->getResultado();
+                                    $db->despejar();
+
+                                    $porPagina = 5;                                                 //socios_x_pagina
+                                    $paginas = ceil( $contador_socios / $porPagina);             // paginacion
+                                    $pagina = ( isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // pagina
+                                    $inicio = ( $pagina - 1) * $porPagina;
+
+                                    ?>
                                         <?php
 
-
-                                        $db->preparar("SELECT 
+                                        $db->setConsulta("SELECT 
                                             id_socio,
                                             CONCAT (nombre, ' ', apellido)  AS nombre_completo, 
                                             email, 
                                             saldo, 
                                             fecha 
                                             FROM socios 
-                                            ORDER BY fecha");
+                                            ORDER BY fecha
+                                            LIMIT $inicio, $porPagina");
                                         $db->ejecutar();
-                                        $resultado = $db->resultado();
+                                        $resultado = $db->getResultado();
 
 
                                         $contador = 0;
-                                        while ($row = $db->resultado()) {
+                                        while ($row = $db->getResultado()) {
                                             $contador++;
                                             $fechaFormateada = date('d - m - Y', $row['fecha']);
                                             echo "<tr>
@@ -214,8 +281,12 @@ $db->despejar();
                                                 <td>{$row['saldo']}</td>                 
                                                 <td>$fechaFormateada</td>                 
                                                 <td>
-                                                <a href='editar_socios.php?editar={$row['id_socio']}' class='btn btn-success'>Editar</a>
-                                                <a href='editar_socios.php?eliminar={$row['id_socio']}' class='btn btn-warning'>Eliminar</a>
+                                                <a href='editar_socios.php?editar={$row['id_socio']}' class='btn btn-success acciones'>
+                                                <i class='bi bi-box-arrow-in-up-right'></i>
+                                                </a>
+                                                <a href='editar_socios.php?confir_eliminar={$row['id_socio']}' class='btn btn-danger acciones'>
+                                                <i class='bi bi-x-circle'></i>
+                                                </a>
                                                 </td>                 
                                             </tr>";
                                         }
@@ -225,6 +296,44 @@ $db->despejar();
                                         ?>
                                     </tbody>
                                 </table>
+                                <?php
+
+                                $anterior = ($pagina - 1);
+                                $siguiente = ($pagina + 1);
+
+                                ?>
+
+                                    <nav aria-label="Page navigation example">
+                                    <ul class="pagination">
+                                        <?php if( !($pagina <= 1) ) : ?>
+                                        <li class="page-item">
+                                        <a class="page-link" href='<?php echo "?pagina=$anterior" ?>' aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                        </li>
+                                        <?php endif; ?>
+
+                                        <?php
+                                            
+                                            if($paginas >= 1){
+                                                for ( $x=1; $x <= $paginas; $x++){
+                                                    echo ($x === $pagina) ? "<li class='active'><a class='page-link' href='?pagina=$x'>$x</a></li>"
+                                                                            : "<li><a href='?pagina=$x'>$x</a></li>";
+                                                }
+                                            }
+
+                                        ?>
+
+                     
+                                        <?php if(!($pagina >= $paginas)) : ?>
+                                        <li class="page-item">
+                                        <a class="page-link" href='<?php echo "?pagina=$siguiente" ?>' aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                        </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                    </nav>
                             </div>
                         </div>
                     </div>

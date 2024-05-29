@@ -9,6 +9,8 @@
 </head>
 
 <body>
+<?php require_once "../lib/validar_registro.php" ?>
+
     <nav class="navbar navbar-expand-lg bg-body-tertiary" id="fondo_nav">
         <div class="container-fluid nav_bar">
             <a class="navbar-brand" href="../index.php">
@@ -24,7 +26,6 @@
         <div class="row">
             <div class="col-sm-6 caja col-center rounded">
 
-                <?php require_once "../lib/validar_registro.php" ?>
 
                 <?php if ($form_ok) : ?>
 

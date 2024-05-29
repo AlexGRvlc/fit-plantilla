@@ -16,21 +16,21 @@ if (!$_SESSION['id_socio'] && !$_SESSION['nombre']) {
     exit;
 }
 
-$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME); // instanciando clase mysqli
 
 $socio_id = $_SESSION["id_socio"];
 
-$db->preparar("SELECT 
+$db->setConsulta("SELECT 
                 id_socio,
                 CONCAT(nombre, ' ', apellido) AS nombre_completo,
                 imagen
                 FROM socios
                 WHERE id_socio = ?");
 
-$db->prep()->bind_param('i', $socio_id);
-$db->ejecutar();
+$db->setParam()->bind_param('i', $socio_id); // agregando parámetro a la consulta
+$db->ejecutar();                         // ejecutando la consulta a la bd
 
-$resultado = $db->resultado();
+$resultado = $db->getResultado();          
 
 $sesion_id = $resultado['id_socio'];
 $nombre_socio = $resultado['nombre_completo'];
@@ -39,7 +39,7 @@ $imagen_socio = $resultado['imagen'];
 $db->despejar();
 
 
-$db->preparar("SELECT 
+$db->setConsulta("SELECT 
                 CONCAT (nombre, ' ', apellido)  AS nombre_completo, 
                 email, 
                 saldo, 
@@ -180,7 +180,7 @@ $db->ejecutar();
                                         <tbody>
                                             <?php
                                             $contador = 0;
-                                            while ($row = $db->resultado()) {
+                                            while ($row = $db->getResultado()) {
                                                 $contador++;
                                                 $fechaFormateada = date('d - m - Y', $row['fecha']);
                                                 echo "<tr>

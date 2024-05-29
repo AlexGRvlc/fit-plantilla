@@ -247,3 +247,11 @@ input {
 .valor h1 {
   margin: 0 !important;  
 }
+
+/* EDITAR SOCIOS */
+.acciones {
+  width: 25px;
+  height: 25px;
+  font-size: 10px;
+  padding: 5px;
+}
