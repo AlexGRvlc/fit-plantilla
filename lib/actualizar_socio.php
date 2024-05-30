@@ -5,11 +5,11 @@ ini_set('display_errors', 1);
 
 require "config_conexion.php";
 require "validar_foto.php";
-
 spl_autoload_register(function ($clase) {
     require_once "../lib/$clase.php";
 });
 
+// Recogida info del formulario de editar_socios.php
 if (isset($_POST["id"])) {
     $id = $_POST["id"];
     $nombre_actualizado = $_POST["nombre"];
@@ -18,7 +18,7 @@ if (isset($_POST["id"])) {
     $saldo_actualizado = $_POST["saldo"];
     $foto  = $_FILES["foto"];
 
-    $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME); // instancia Obj BD
 
     $consulta = "UPDATE socios
                  SET nombre = ?,

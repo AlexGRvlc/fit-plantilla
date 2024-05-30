@@ -4,24 +4,29 @@ ini_set('display_errors', 1);
 
 session_start();
 
+// Requerimientos de apoyo
 require_once "../lib/config_conexion.php";
 require_once "../lib/date.php";
 require_once "../lib/validar_foto.php";
+require "../lib/validar_login.php";
 require_once "../lib/borrar_foto.php";
-
 spl_autoload_register(function ($clase) {
     require_once "../lib/$clase.php";
 });
 
+// Comprobación de que el usuario existe y tiene una 
+// sesión abierta
 if (!$_SESSION['id_socio'] && !$_SESSION['nombre']) {
     header("Location: ../index.php");
     exit;
 }
 
-$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME); // instanciación de Obj sql
 
 $socio_id = $_SESSION["id_socio"];
 
+// Como en admin necesitamos la info de la BD
+// para el nombre y foto del usuario en el panel
 $db->setConsulta("SELECT 
                 id_socio,
                 CONCAT(nombre, ' ', apellido) AS nombre_completo,
@@ -67,14 +72,11 @@ $db->despejar();
             <div class="text-center">
                 <!-- <a class="nav-link active text-center" id="inicio" aria-current="page" href="../index.php">Inicio</a> -->
                 <a class="nav-link active text-center" href="../pages/logout.php">Cerrar Sesión</a>
-
             </div>
         </div>
     </nav>
-    <?php require "../lib/validar_login.php" ?>
 
     <div class="container-fluid p-0">
-
         <div class="left">
             <div class="usuario">
                 <img class='img__usuario rounded-circle' src='../pages/<?php echo $imagen_socio; ?>' alt='foto-perfil'>
@@ -96,6 +98,14 @@ $db->despejar();
                 </div>
             </div>
 
+            <!-- 
+            4 Opciones:
+                1 - Editar socio > formulario 
+                2 - Confirmar eliminar
+                3 - Eliminar
+                4 - Mostrar los socios con las opciones 
+            -->
+            <!-- 1 -->
             <?php if (isset($_GET["editar"])) : ?>
 
                 <div class="row">
@@ -157,7 +167,7 @@ $db->despejar();
                     </div>
                 </div>
 
-
+                <!-- 2 -->
             <?php elseif (isset($_GET["confir_eliminar"])) : ?>
 
                 <div class="row justify-content-center">
@@ -170,6 +180,7 @@ $db->despejar();
                     </div>
                 </div>
 
+                <!-- 3 -->
             <?php elseif (isset($_GET["eliminar"])) : ?>
 
                 <div class="row justify-content-center">
@@ -202,9 +213,8 @@ $db->despejar();
                             if ($db->getFilasAfectadas() > 0) {
                                 echo "Socio eliminado";
 
-                                // header("Refresh:2; url=editar_socios.php");
+                                header("Refresh:2; url=editar_socios.php");
                                 borrarFoto("../pages/fotos/$name");
-
                             }
 
                             $db->despejar();
@@ -217,6 +227,7 @@ $db->despejar();
                 </div>
 
 
+                <!-- 4 -->
             <?php else : ?>
 
 
@@ -225,8 +236,21 @@ $db->despejar();
                         <div class="caja">
                             <div class="caja-cabecera">
                                 <h1><i class="bi bi-people"></i>Edita o elimina algún socio</h1>
+
+                                <!-- MODIFICAR -->
+                                <div class="col-sm-4 float-end">
+                                    <form action="" id="busqueda" method="GET">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" name="busqueda" placeholder="Ingrese su búsqueda">
+                                            <!-- <input type="text" placeholder="Ingrese su búsqueda"> -->
+                                            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Button</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+
                             </div>
-                            <div class="caja-cuerpo">
+                            <div class="caja">
                                 <table class="table table-cell">
                                     <thead>
                                         <tr>
@@ -239,25 +263,73 @@ $db->despejar();
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <?php
-                                    // consulta para contar el numero total de socios
-                                    $db->setConsulta("SELECT
-                                                        COUNT(id_socio) AS total_socios
-                                                        FROM socios");
-                                    $db->ejecutar();
-                                    $resultado = $db->getResultado();
-                                    $total_socios = $resultado["total_socios"];
-                                    $db->despejar();
 
-                                    $porPagina = 5;           //socios_x_pagina socios x pagina
-                                    $paginas = ceil( $total_socios / $porPagina);             // paginacion nº total paginas
-                                    $pagina = ( isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // pagina pagina actual
-                                    $inicio = ( $pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
-
-                                    ?>
                                         <?php
 
-                                        $db->setConsulta("SELECT 
+                                            // consulta para contar el número total de socios
+                                            // para la paginación
+                                            $db->setConsulta("SELECT
+                                            COUNT(id_socio) AS total_socios
+                                            FROM socios");
+                                            $db->ejecutar();
+                                            $resultado = $db->getResultado();
+                                            $total_socios = $resultado["total_socios"];
+                                            $db->despejar();
+
+                                            $porPagina = 5;           // socios_x_pagina 
+                                            $paginas = ceil($total_socios / $porPagina);             // nº total páginas
+                                            $pagina = (isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // página actual
+                                            $inicio = ($pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
+
+
+                                        if (isset($_GET["busqueda"])) {
+
+                                            if (empty($_GET["busqueda"])) {
+                                                echo "Error";
+                                                exit;
+                                            }
+                                            $consulta = "SELECT 
+                                            id_socio,
+                                            CONCAT(nombre, ' ', apellido) AS nombre_completo, 
+                                            email, 
+                                            saldo, 
+                                            fecha 
+                                            FROM socios 
+                                            WHERE 1=1";
+                               
+                                            $busqueda_nombres = explode(" ", $_GET["busqueda"]);
+                                         
+                                            
+                                            $condiciones = [];
+                                            foreach ($busqueda_nombres as $nombre) {
+                                                $condiciones[] = "nombre LIKE '%" . $nombre . "%'";
+                                            }
+                                            
+                                            if (count($condiciones) > 0) {
+                                                $consulta .= " AND (" . implode(" OR ", $condiciones) . ")";
+                                            }
+                                            
+                                            $consulta .= " ORDER BY fecha LIMIT $inicio, $porPagina";
+                                            $db->setConsulta($consulta);
+
+
+
+                                           $paginas_busqueda = "SELECT
+                                                                    COUNT(id_socio)
+                                                                    FROM socios
+                                                                    ";
+                                                   $contador = 0;                 
+                                            foreach ($busqueda_nombres as $nombre) {
+                                                $contador++;
+                                            }
+
+                                            echo $contador;
+                                           
+                                                } else {
+
+                                            // Datos necesarios para paginar las salidas de socios
+                                            // por pantalla. 
+                                            $consulta = "SELECT 
                                             id_socio,
                                             CONCAT (nombre, ' ', apellido)  AS nombre_completo, 
                                             email, 
@@ -265,12 +337,19 @@ $db->despejar();
                                             fecha 
                                             FROM socios 
                                             ORDER BY fecha
-                                            LIMIT $inicio, $porPagina");
-                                        $db->ejecutar();
-
-
+                                            LIMIT $inicio, $porPagina";
+                                            $db->setConsulta($consulta);
+                                        }
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        $db->ejecutar();    
                                         $contador = $inicio;
-                                        while ( $row = $db->getResultado() ) {
+
+                                        // Creación de la tabla con los resultados de BD
+                                        while ($row = $db->getResultado()) {
                                             $contador++;
                                             $fechaFormateada = date('d - m - Y', $row['fecha']);
                                             echo "<tr>
@@ -297,18 +376,20 @@ $db->despejar();
                                 </table>
                                 <?php
 
-                                echo "Inicio: $inicio<br>";
-                                echo "Por Página: $porPagina<br>";
-                                echo "Total Socios: $total_socios<br>";
-                                echo "Total Páginas: $paginas<br>";
-
-
                                 $anterior = ($pagina - 1);
                                 $siguiente = ($pagina + 1);
+
+
+
                                 ?>
 
                                 <nav aria-label="Page navigation example">
                                     <ul class="pagination justify-content-center"> <!-- Centra los elementos de la paginación -->
+
+                                        <!-- 
+                                        Opciones para mostrar o no los iconos de previo/posterior
+                                        Op-2 -> se muetra o no el de previo 
+                                        -->
                                         <?php if ($pagina > 1) : ?>
                                             <li class="page-item">
                                                 <a class="page-link" href='<?php echo "?pagina=$anterior"; ?>' aria-label="Previous">
@@ -318,14 +399,15 @@ $db->despejar();
                                         <?php endif; ?>
 
                                         <?php
+                                        // Se muestra la página activa y el total
                                         if ($paginas >= 1) {
                                             for ($x = 1; $x <= $paginas; $x++) {
-                                                echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x'>$x</a></li>" 
-                                                                    : "<li class='page-item'><a class='page-link' href='?pagina=$x'>$x</a></li>";
+                                                echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x'>$x</a></li>"
+                                                    : "<li class='page-item'><a class='page-link' href='?pagina=$x'>$x</a></li>";
                                             }
                                         }
                                         ?>
-
+                                        <!-- Op-2 -> se muetra o no el de anterior -->
                                         <?php if ($pagina < $paginas) : ?>
                                             <li class="page-item">
                                                 <a class="page-link" href='<?php echo "?pagina=$siguiente"; ?>' aria-label="Next">

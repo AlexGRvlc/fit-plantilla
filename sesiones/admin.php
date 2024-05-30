@@ -2,11 +2,12 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-session_start();
+session_start(); // inicio de sesión
 
+// Recursos de apoyo
 require_once "../lib/config_conexion.php";
 require_once "../lib/date.php";
-
+require "../lib/validar_login.php";
 spl_autoload_register(function ($clase) {
     require_once "../lib/$clase.php";
 });
@@ -18,8 +19,10 @@ if (!$_SESSION['id_socio'] && !$_SESSION['nombre']) {
 
 $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME); // instanciando clase mysqli
 
-$socio_id = $_SESSION["id_socio"];
+$socio_id = $_SESSION["id_socio"]; // Sacar la id del usuario para parámetro consulta
 
+// Se requiere el nombre de usuario y su imagen 
+// para el panel/pantalla de registrad@
 $db->setConsulta("SELECT 
                 id_socio,
                 CONCAT(nombre, ' ', apellido) AS nombre_completo,
@@ -29,16 +32,16 @@ $db->setConsulta("SELECT
 
 $db->setParam()->bind_param('i', $socio_id); // agregando parámetro a la consulta
 $db->ejecutar();                         // ejecutando la consulta a la bd
-
-$resultado = $db->getResultado();          
-
+// Obteniendo variables
+$resultado = $db->getResultado();
 $sesion_id = $resultado['id_socio'];
 $nombre_socio = $resultado['nombre_completo'];
 $imagen_socio = $resultado['imagen'];
-
+// Liberar la info almacenada en la llamada a BD
 $db->despejar();
 
-
+// Para sacar variables a mostrar en el panel de administrador/a
+// de la info de los n últimos socios registrados
 $db->setConsulta("SELECT 
                 CONCAT (nombre, ' ', apellido)  AS nombre_completo, 
                 email, 
@@ -62,7 +65,6 @@ $db->ejecutar();
 </head>
 
 <body>
-
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" id="fondo_nav">
         <div class="container-fluid nav_bar">
             <a class="navbar-brand" href="../index.php">
@@ -78,15 +80,8 @@ $db->ejecutar();
             </div>
         </div>
     </nav>
-    <?php require "../lib/validar_login.php" ?>
 
     <div class="container-fluid p-0">
-
-
-
-
-
-
         <div class="left">
             <div class="usuario">
                 <img class='img__usuario rounded-circle' src='../pages/<?php echo $imagen_socio; ?>' alt='foto-perfil'>
@@ -179,6 +174,7 @@ $db->ejecutar();
                                         </thead>
                                         <tbody>
                                             <?php
+                                            // Salida por pantalla de la info de socio
                                             $contador = 0;
                                             while ($row = $db->getResultado()) {
                                                 $contador++;

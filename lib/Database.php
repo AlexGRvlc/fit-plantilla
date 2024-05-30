@@ -1,5 +1,5 @@
 <?php
-require "../lib/errores.php";
+//require "../lib/errores.php"; // ---> !important
 
 class Database
 {
@@ -39,14 +39,18 @@ class Database
     // con parametros proporcionados en param
     public function setConsulta($consulta)
     {
-        $this->consulta = $consulta;            // se instancia la variable $consulta
-        $this->param = $this->db->prepare($this->consulta); // db llama a prepare
-        if (!$this->param) {
-            trigger_error("Error al preparar la consulta: " . $this->db->error, E_USER_ERROR);
-            return false;
+        $this->consulta = $consulta;
+        if (strpos($this->consulta, '?') !== false) {
+            // Solo preparar la consulta si contiene parámetros
+            $this->param = $this->db->prepare($this->consulta);
+            if (!$this->param) {
+                trigger_error("Error al preparar la consulta: " . $this->db->error, E_USER_ERROR);
+                return false;
+            }
         } else {
-            return true;
+            $this->param = null; // No hay parámetros, ejecutar directamente
         }
+        return true;
     }
 
     // agrega los parametro/s a la variable param
@@ -66,13 +70,14 @@ class Database
     // 
     public function getSocioPorId($id)
     {
-        $this->param = $this->db->prepare("SELECT nombre, 
-                                                  apellido, 
-                                                  email, 
-                                                  saldo, 
-                                                  imagen 
-                                                  FROM socios 
-                                                  WHERE id_socio = ?");
+        $this->param = $this->db->prepare("SELECT 
+                                            nombre, 
+                                            apellido, 
+                                            email, 
+                                            saldo, 
+                                            imagen 
+                                            FROM socios 
+                                            WHERE id_socio = ?");
         $this->param->bind_param('i', $id);
         if ($this->param->execute()) {
             $this->resultado = $this->param->get_result();
@@ -87,16 +92,23 @@ class Database
     public function ejecutar()
     {
         if ($this->param === null) {
-            trigger_error("Error: Consulta no preparada", E_USER_ERROR);
-            return false;
-        }
-
-        if ($this->param->execute()) {
-            $this->resultado = $this->param->get_result();
-            return true;
+            // Ejecutar directamente si no hay parámetros
+            $this->resultado = $this->db->query($this->consulta);
+            if ($this->resultado) {
+                return true;
+            } else {
+                trigger_error("Error al ejecutar la consulta: " . $this->db->error, E_USER_ERROR);
+                return false;
+            }
         } else {
-            trigger_error("Error al ejecutar la consulta: " . $this->param->error, E_USER_ERROR);
-            return false;
+            // Ejecutar con parámetros
+            if ($this->param->execute()) {
+                $this->resultado = $this->param->get_result();
+                return true;
+            } else {
+                trigger_error("Error al ejecutar la consulta: " . $this->param->error, E_USER_ERROR);
+                return false;
+            }
         }
     }
 

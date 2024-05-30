@@ -18,12 +18,14 @@ function validar_foto($nombre, $update = false)
     $extensiones_validas = ["jpeg", "jpg", "png", "webp"];
 
 
-
+    // En caso de que se requiera únicamente
+    // borrar la foto (por eliminación socio)
     if ($update) {
         $dir = $foto_dir;
         borrarFoto($dir);
     }
 
+    // Creación dir/archivo para foto de perfil
     if (in_array($extension_archivo, $extensiones_validas)) {
 
         if (!file_exists("../pages/fotos")) {
