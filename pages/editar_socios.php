@@ -240,19 +240,19 @@ $db->despejar();
                                     </thead>
                                     <tbody>
                                     <?php
-
+                                    // consulta para contar el numero total de socios
                                     $db->setConsulta("SELECT
-                                                        COUNT(id_socio)
+                                                        COUNT(id_socio) AS total_socios
                                                         FROM socios");
                                     $db->ejecutar();
-                                    $db->setParam()->bind_result( $contador_socios);
-                                    $db->getResultado();
+                                    $resultado = $db->getResultado();
+                                    $total_socios = $resultado["total_socios"];
                                     $db->despejar();
 
-                                    $porPagina = 5;                                                 //socios_x_pagina
-                                    $paginas = ceil( $contador_socios / $porPagina);             // paginacion
-                                    $pagina = ( isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // pagina
-                                    $inicio = ( $pagina - 1) * $porPagina;
+                                    $porPagina = 5;           //socios_x_pagina socios x pagina
+                                    $paginas = ceil( $total_socios / $porPagina);             // paginacion nº total paginas
+                                    $pagina = ( isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // pagina pagina actual
+                                    $inicio = ( $pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
 
                                     ?>
                                         <?php
@@ -267,11 +267,10 @@ $db->despejar();
                                             ORDER BY fecha
                                             LIMIT $inicio, $porPagina");
                                         $db->ejecutar();
-                                        $resultado = $db->getResultado();
 
 
-                                        $contador = 0;
-                                        while ($row = $db->getResultado()) {
+                                        $contador = $inicio;
+                                        while ( $row = $db->getResultado() ) {
                                             $contador++;
                                             $fechaFormateada = date('d - m - Y', $row['fecha']);
                                             echo "<tr>
@@ -298,42 +297,44 @@ $db->despejar();
                                 </table>
                                 <?php
 
+                                echo "Inicio: $inicio<br>";
+                                echo "Por Página: $porPagina<br>";
+                                echo "Total Socios: $total_socios<br>";
+                                echo "Total Páginas: $paginas<br>";
+
+
                                 $anterior = ($pagina - 1);
                                 $siguiente = ($pagina + 1);
-
                                 ?>
 
-                                    <nav aria-label="Page navigation example">
-                                    <ul class="pagination">
-                                        <?php if( !($pagina <= 1) ) : ?>
-                                        <li class="page-item">
-                                        <a class="page-link" href='<?php echo "?pagina=$anterior" ?>' aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                        </li>
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination justify-content-center"> <!-- Centra los elementos de la paginación -->
+                                        <?php if ($pagina > 1) : ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href='<?php echo "?pagina=$anterior"; ?>' aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
                                         <?php endif; ?>
 
                                         <?php
-                                            
-                                            if($paginas >= 1){
-                                                for ( $x=1; $x <= $paginas; $x++){
-                                                    echo ($x === $pagina) ? "<li class='active'><a class='page-link' href='?pagina=$x'>$x</a></li>"
-                                                                            : "<li><a href='?pagina=$x'>$x</a></li>";
-                                                }
+                                        if ($paginas >= 1) {
+                                            for ($x = 1; $x <= $paginas; $x++) {
+                                                echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x'>$x</a></li>" 
+                                                                    : "<li class='page-item'><a class='page-link' href='?pagina=$x'>$x</a></li>";
                                             }
-
+                                        }
                                         ?>
 
-                     
-                                        <?php if(!($pagina >= $paginas)) : ?>
-                                        <li class="page-item">
-                                        <a class="page-link" href='<?php echo "?pagina=$siguiente" ?>' aria-label="Next">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                        </li>
+                                        <?php if ($pagina < $paginas) : ?>
+                                            <li class="page-item">
+                                                <a class="page-link" href='<?php echo "?pagina=$siguiente"; ?>' aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </a>
+                                            </li>
                                         <?php endif; ?>
                                     </ul>
-                                    </nav>
+                                </nav>
                             </div>
                         </div>
                     </div>
