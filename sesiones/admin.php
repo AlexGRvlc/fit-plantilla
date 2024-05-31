@@ -12,7 +12,7 @@ spl_autoload_register(function ($clase) {
     require_once "../lib/$clase.php";
 });
 
-if (!$_SESSION['id_socio'] && !$_SESSION['nombre']) {
+if (!$_SESSION['id_socio'] && !$_SESSION['nombre'] && !$_SESSION['rol']) {
     header("Location: ../index.php");
     exit;
 }
@@ -92,6 +92,9 @@ $db->ejecutar();
         </div>
 
         <div class="right">
+
+        <?php if($_SESSION["rol"] == "administrador") : ?>
+
             <div class="cabecera">
                 <div class="titulo">
                     <h1>Administración</h1>
@@ -199,6 +202,7 @@ $db->ejecutar();
         </div>
 
 
+        <?php endif; ?>
 
 
     </div>

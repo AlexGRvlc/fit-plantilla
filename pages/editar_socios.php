@@ -16,7 +16,7 @@ spl_autoload_register(function ($clase) {
 
 // Comprobación de que el usuario existe y tiene una 
 // sesión abierta
-if (!$_SESSION['id_socio'] && !$_SESSION['nombre']) {
+if (!$_SESSION['id_socio'] && !$_SESSION['nombre'] && !$_SESSION['rol']) {
     header("Location: ../index.php");
     exit;
 }
@@ -276,6 +276,10 @@ $db->despejar();
                                         $total_socios = $resultado["total_socios"];
                                         $db->despejar();
 
+                                        
+                                        $porPagina = 5;           // socios_x_pagina 
+                                        $pagina = (isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // página actual
+                                        $inicio = ($pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
 
 
 
@@ -285,11 +289,6 @@ $db->despejar();
                                                 echo "Error";
                                                 exit;
                                             }
-
-                                            $porPagina = 5;           // socios_x_pagina 
-                                            $paginas = ceil($total_socios / $porPagina);             // nº total páginas
-                                            $pagina = (isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // página actual
-                                            $inicio = ($pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
 
 
                                             $consulta = "SELECT 
@@ -355,10 +354,10 @@ $db->despejar();
                                             $resultado_contador = $db->getResultado();
 
                                             // Obtener el valor del conteo
-                                            $contador = intval($resultado_contador["contador"]);
-
+                                            $contador = intval($resultado_contador["contador"]);//-------------HERE---------------------------
                                             $consulta_busqueda .= " ORDER BY fecha LIMIT $inicio, $porPagina";
-
+                                            
+                                            $paginas = ceil($contador / $porPagina);             // nº total páginas
                                             // Ejecutar la consulta para obtener los resultados de búsqueda
                                             $db->setConsulta($consulta_busqueda);
                                             $db->ejecutar();
@@ -369,13 +368,14 @@ $db->despejar();
                                                 // Ejemplo: echo $fila["id_socio"], $fila["nombre_completo"], etc.
                                             }
 
-                                            echo "Total de resultados: " . $contador;
+                                            if ($contador > 1 || $contador == 0 ){
+                                                echo "<h4>$contador resultados encontrados</h4>";
+                                            }else {
+                                                echo "<h4>$contador resultado encontrado</h4>";
+                                            }
                                         } else {
 
-                                            $porPagina = 5;           // socios_x_pagina 
                                             $paginas = ceil($total_socios / $porPagina);             // nº total páginas
-                                            $pagina = (isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // página actual
-                                            $inicio = ($pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
 
                                             // Datos necesarios para paginar las salidas de socios
                                             // por pantalla. 
@@ -390,9 +390,6 @@ $db->despejar();
                                             LIMIT $inicio, $porPagina";
                                             $db->setConsulta($consulta);
                                         }
-
-
-
 
 
                                         $db->ejecutar();
@@ -429,6 +426,14 @@ $db->despejar();
                                 $anterior = ($pagina - 1);
                                 $siguiente = ($pagina + 1);
 
+                                // variables para la paginación de la búsqueda/normal
+                                if (isset($_GET["busqueda"])){
+                                    $pag_anterior = "?pagina=$anterior&busqueda={$_GET['busqueda']}";
+                                    $pag_siguiente = "?pagina=$siguiente&busqueda={$_GET['busqueda']}";
+                                }else {
+                                    $pag_anterior = "?pagina=$anterior";
+                                    $pag_siguiente = "?pagina=$siguiente";
+                                }
 
 
                                 ?>
@@ -440,7 +445,9 @@ $db->despejar();
                                         Opciones para mostrar o no los iconos de previo/posterior
                                         Op-2 -> se muetra o no el de previo 
                                         -->
-                                        <?php if ($pagina > 1) : ?>
+                                        <?php 
+                                        
+                                        if ($pagina > 1) : ?>
                                             <li class="page-item">
                                                 <a class="page-link" href='<?php echo "?pagina=$anterior"; ?>' aria-label="Previous">
                                                     <span aria-hidden="true">&laquo;</span>
@@ -449,13 +456,27 @@ $db->despejar();
                                         <?php endif; ?>
 
                                         <?php
-                                        // Se muestra la página activa y el total
-                                        if ($paginas >= 1) {
-                                            for ($x = 1; $x <= $paginas; $x++) {
-                                                echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x'>$x</a></li>"
-                                                    : "<li class='page-item'><a class='page-link' href='?pagina=$x'>$x</a></li>";
+
+                                        if (isset($_GET["busqueda"])){
+                                            // Se muestra la página activa y el total de la búsqueda
+                                            if ($paginas >= 1) {
+                                                for ($x = 1; $x <= $paginas; $x++) {
+                                                    echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x&busqueda={$_GET['busqueda']}'>$x</a></li>"
+                                                        : "<li class='page-item'><a class='page-link' href='?pagina=$x&busqueda={$_GET['busqueda']}'>$x</a></li>";
+                                                }
+                                            }                                            
+                                        } else {
+
+                                            // Se muestra la página activa y el total normal
+                                            if ($paginas >= 1) {
+                                                for ($x = 1; $x <= $paginas; $x++) {
+                                                    echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x'>$x</a></li>"
+                                                        : "<li class='page-item'><a class='page-link' href='?pagina=$x'>$x</a></li>";
+                                                }
                                             }
                                         }
+
+
                                         ?>
                                         <!-- Op-2 -> se muetra o no el de anterior -->
                                         <?php if ($pagina < $paginas) : ?>

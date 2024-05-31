@@ -28,7 +28,7 @@ if ($_POST) {
 
         if ($validar_email !== 0) {
             // $fecha = time();
-            $db->setConsulta("SELECT id_socio, CONCAT (nombre, ' ', apellido)  AS nombre_completo, contrasena, email, imagen, fecha FROM socios WHERE email = ?");
+            $db->setConsulta("SELECT id_socio, CONCAT (nombre, ' ', apellido)  AS nombre_completo, contrasena, email, rol, fecha FROM socios WHERE email = ?");
             $db->setParam()->bind_param('s', $email);
             $db->ejecutar();
             $resultado = $db->getResultado();
@@ -38,6 +38,7 @@ if ($_POST) {
             $db_contrasena = $resultado["contrasena"];
             $db_email = $resultado["email"];
             $db_path_foto = $resultado["imagen"];
+            $db_rol = $resultado["rol"];
 
             if ($email === $db_email) {
 
@@ -45,14 +46,14 @@ if ($_POST) {
 
                     $_SESSION['id_socio'] = $db_id_socio;
                     $_SESSION['nombre'] = $db_nombre_completo;
-                    $_SESSION['imagen'] = $db_path_foto;
+                    $_SESSION['rol'] = $db_rol;
 
                     $caduca = time()+365*24*60*60;
 
                     if ( $_POST['sesion_activa'] === 'activo' ){
                         setcookie('id', $_SESSION['id_socio'], $caduca, "/");
                         setcookie('nombre', $_SESSION['nombre'], $caduca, "/");
-                        setcookie('img', $_SESSION['imagen'], $caduca, "/");
+                        setcookie('rol', $_SESSION['rol'], $caduca, "/");
                     }
 
                     $db->cerrar();

@@ -2,12 +2,12 @@
 
 session_start();
 
-if ((isset($_SESSION['nombre']) && ($_SESSION['id_socio'])) || isset($_COOKIE['nombre'])) {
+if ((isset($_SESSION['nombre']) && isset($_SESSION['id_socio']) && isset($_SESSION['rol'])) || isset($_COOKIE['nombre'])) {
 
     if (isset($_COOKIE['nombre'])) {
         $_SESSION['id_socio'] = $_COOKIE['id'];
         $_SESSION['nombre'] = $_COOKIE['nombre'];
-        $_SESSION['imagen'] = $_COOKIE['img'];
+        $_SESSION['rol'] = $_COOKIE['rol'];
     }
 
     header("Location: ../sesiones/admin.php");
