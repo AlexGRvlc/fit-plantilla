@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (preg_match($expreg, $email)) { // preg_match - comparación con expresión regular
 
             if (strlen($password) > 6) {
+
                 $password_ok = true;
             } else {
                 echo "La contraseña debe ser mayor a 6 caracteres";
@@ -49,12 +50,17 @@ if ($password_ok) {
         $validar_email = $db->validarDatos('email', 'socios', $email);
 
         if ($validar_email === 0) {
+
+            // Generando el hash/encriptación de la contraseña:
+            $hasher =  new PasswordHash(8, FALSE);
+            $hash = $hasher->HashPassword($password);
+
             $path_foto = validar_foto($nombre);
             if ($path_foto) {
                 $fecha = time();
                 $consulta = "INSERT INTO socios (nombre, apellido, contrasena, email, saldo, imagen, fecha) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 if ($db->setConsulta($consulta)) {
-                    $db->setParam()->bind_param('ssssisi', $nombre, $apellido, $password, $email, $saldo, $path_foto, $fecha);
+                    $db->setParam()->bind_param('ssssisi', $nombre, $apellido, $hash, $email, $saldo, $path_foto, $fecha);
                     if ($db->ejecutar()) {
                         echo "Te has registrado con éxito!";
                         $form_ok = true;

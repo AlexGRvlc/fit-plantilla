@@ -28,7 +28,7 @@ if ($_POST) {
 
         if ($validar_email !== 0) {
             // $fecha = time();
-            $db->setConsulta("SELECT id_socio, CONCAT (nombre, ' ', apellido)  AS nombre_completo, contrasena, email, rol, fecha FROM socios WHERE email = ?");
+            $db->setConsulta("SELECT id_socio, CONCAT (nombre, ' ', apellido)  AS nombre_completo, contrasena, email, imagen, rol, fecha FROM socios WHERE email = ?");
             $db->setParam()->bind_param('s', $email);
             $db->ejecutar();
             $resultado = $db->getResultado();
@@ -42,15 +42,19 @@ if ($_POST) {
 
             if ($email === $db_email) {
 
-                if ($password === $db_contrasena) { 
+                // Generando el hash/encriptación de la contraseña
+                $hasher =  new PasswordHash(8, FALSE); // Obj instanciado
+
+                // Comprobando la contraseña
+                if ($hasher->CheckPassword($password, $db_contrasena)) {
 
                     $_SESSION['id_socio'] = $db_id_socio;
                     $_SESSION['nombre'] = $db_nombre_completo;
                     $_SESSION['rol'] = $db_rol;
 
-                    $caduca = time()+365*24*60*60;
+                    $caduca = time() + 365 * 24 * 60 * 60;
 
-                    if ( $_POST['sesion_activa'] === 'activo' ){
+                    if ($_POST['sesion_activa'] === 'activo') {
                         setcookie('id', $_SESSION['id_socio'], $caduca, "/");
                         setcookie('nombre', $_SESSION['nombre'], $caduca, "/");
                         setcookie('rol', $_SESSION['rol'], $caduca, "/");
@@ -58,13 +62,11 @@ if ($_POST) {
 
                     $db->cerrar();
 
-                    if($db_rol == "administrador"){
-                        header ("Location: ../sesiones/admin.php");
+                    if ($db_rol == "administrador") {
+                        header("Location: ../sesiones/admin.php");
                     } else {
-                        header ("Location: ../sesiones/socios.php");
+                        header("Location: ../sesiones/socios.php");
                     }
-
-                    
                 } else {
                     echo "Esta contraseña no coincide con la del usuario registrado.";
                 }
