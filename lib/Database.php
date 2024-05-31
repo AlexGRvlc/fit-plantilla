@@ -118,6 +118,21 @@ class Database
         return $this->param->affected_rows;
     }
 
+    // Método para contar filas resultantes de una consulta
+    public function contarFilasConsulta($consulta)
+    {
+        $resultado = $this->db->query($consulta);
+        if ($resultado) {
+            $contador = $resultado->num_rows;
+            $resultado->free();
+            return $contador;
+        } else {
+            trigger_error("Error al ejecutar la consulta: " . $this->db->error, E_USER_ERROR);
+            return false;
+        }
+    }
+
+
     // Libera la memoria asociada a un 
     // resultado 
     public function despejar()

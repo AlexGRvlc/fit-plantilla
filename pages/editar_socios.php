@@ -266,20 +266,17 @@ $db->despejar();
 
                                         <?php
 
-                                            // consulta para contar el número total de socios
-                                            // para la paginación
-                                            $db->setConsulta("SELECT
+                                        // consulta para contar el número total de socios
+                                        // para la paginación
+                                        $db->setConsulta("SELECT
                                             COUNT(id_socio) AS total_socios
                                             FROM socios");
-                                            $db->ejecutar();
-                                            $resultado = $db->getResultado();
-                                            $total_socios = $resultado["total_socios"];
-                                            $db->despejar();
+                                        $db->ejecutar();
+                                        $resultado = $db->getResultado();
+                                        $total_socios = $resultado["total_socios"];
+                                        $db->despejar();
 
-                                            $porPagina = 5;           // socios_x_pagina 
-                                            $paginas = ceil($total_socios / $porPagina);             // nº total páginas
-                                            $pagina = (isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // página actual
-                                            $inicio = ($pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
+
 
 
                                         if (isset($_GET["busqueda"])) {
@@ -288,6 +285,13 @@ $db->despejar();
                                                 echo "Error";
                                                 exit;
                                             }
+
+                                            $porPagina = 5;           // socios_x_pagina 
+                                            $paginas = ceil($total_socios / $porPagina);             // nº total páginas
+                                            $pagina = (isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // página actual
+                                            $inicio = ($pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
+
+
                                             $consulta = "SELECT 
                                             id_socio,
                                             CONCAT(nombre, ' ', apellido) AS nombre_completo, 
@@ -296,36 +300,82 @@ $db->despejar();
                                             fecha 
                                             FROM socios 
                                             WHERE 1=1";
-                               
+
                                             $busqueda_nombres = explode(" ", $_GET["busqueda"]);
-                                         
-                                            
+
                                             $condiciones = [];
                                             foreach ($busqueda_nombres as $nombre) {
                                                 $condiciones[] = "nombre LIKE '%" . $nombre . "%'";
                                             }
-                                            
+
                                             if (count($condiciones) > 0) {
                                                 $consulta .= " AND (" . implode(" OR ", $condiciones) . ")";
                                             }
-                                            
+
                                             $consulta .= " ORDER BY fecha LIMIT $inicio, $porPagina";
                                             $db->setConsulta($consulta);
 
 
 
-                                           $paginas_busqueda = "SELECT
-                                                                    COUNT(id_socio)
-                                                                    FROM socios
-                                                                    ";
-                                                   $contador = 0;                 
+                                            // paginación búsqueda
+                                            $consulta_busqueda = "SELECT 
+                                                                      id_socio,
+                                                                      CONCAT(nombre, ' ', apellido) AS nombre_completo, 
+                                                                      email, 
+                                                                      saldo, 
+                                                                      fecha 
+                                                                  FROM socios 
+                                                                  WHERE ";
+
+                                            $condiciones = [];
                                             foreach ($busqueda_nombres as $nombre) {
-                                                $contador++;
+                                                $condiciones[] = "nombre LIKE '%" . $nombre . "%'";
                                             }
 
-                                            echo $contador;
-                                           
-                                                } else {
+                                            if (count($condiciones) > 0) {
+                                                $consulta_busqueda .= implode(" OR ", $condiciones);
+                                            } else {
+                                                // Si no hay condiciones, seleccionar todos los socios
+                                                $consulta_busqueda .= "1";
+                                            }
+
+                                            // Consulta de conteo
+                                            $consulta_contador = "SELECT COUNT(id_socio) AS contador FROM socios WHERE ";
+
+                                            if (count($condiciones) > 0) {
+                                                $consulta_contador .= implode(" OR ", $condiciones);
+                                            } else {
+                                                // Si no hay condiciones, contar todos los socios
+                                                $consulta_contador .= "1";
+                                            }
+
+                                            // Ejecutar la consulta de conteo
+                                            $db->setConsulta($consulta_contador);
+                                            $db->ejecutar();
+                                            $resultado_contador = $db->getResultado();
+
+                                            // Obtener el valor del conteo
+                                            $contador = intval($resultado_contador["contador"]);
+
+                                            $consulta_busqueda .= " ORDER BY fecha LIMIT $inicio, $porPagina";
+
+                                            // Ejecutar la consulta para obtener los resultados de búsqueda
+                                            $db->setConsulta($consulta_busqueda);
+                                            $db->ejecutar();
+
+                                            // Mostrar los resultados
+                                            while ($fila = $db->getResultado()) {
+                                                // Procesar y mostrar cada fila de resultado aquí
+                                                // Ejemplo: echo $fila["id_socio"], $fila["nombre_completo"], etc.
+                                            }
+
+                                            echo "Total de resultados: " . $contador;
+                                        } else {
+
+                                            $porPagina = 5;           // socios_x_pagina 
+                                            $paginas = ceil($total_socios / $porPagina);             // nº total páginas
+                                            $pagina = (isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // página actual
+                                            $inicio = ($pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
 
                                             // Datos necesarios para paginar las salidas de socios
                                             // por pantalla. 
@@ -340,12 +390,12 @@ $db->despejar();
                                             LIMIT $inicio, $porPagina";
                                             $db->setConsulta($consulta);
                                         }
-                                        
-                                        
-                                        
-                                        
-                                        
-                                        $db->ejecutar();    
+
+
+
+
+
+                                        $db->ejecutar();
                                         $contador = $inicio;
 
                                         // Creación de la tabla con los resultados de BD
