@@ -21,6 +21,13 @@ if (!$_SESSION['id_socio'] && !$_SESSION['nombre'] && !$_SESSION['rol']) {
     exit;
 }
 
+// En caso de entrar con rol de registrado la aplicación se redireccionará 
+// al inicio, al index
+if ($_SESSION["rol"] == "registrado") {
+    header("Location: ../sesiones/socios.php");
+    exit;
+}
+
 $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME); // instanciación de Obj sql
 
 $socio_id = $_SESSION["id_socio"];
@@ -43,8 +50,6 @@ $sesion_id = $resultado['id_socio'];
 $nombre_socio = $resultado['nombre_completo'];
 $imagen_socio = $resultado['imagen'];
 $db->despejar();
-
-
 
 ?>
 

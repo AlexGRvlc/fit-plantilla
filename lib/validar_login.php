@@ -57,7 +57,13 @@ if ($_POST) {
                     }
 
                     $db->cerrar();
-                    header ("Location: ../sesiones/admin.php");
+
+                    if($db_rol == "administrador"){
+                        header ("Location: ../sesiones/admin.php");
+                    } else {
+                        header ("Location: ../sesiones/socios.php");
+                    }
+
                     
                 } else {
                     echo "Esta contraseña no coincide con la del usuario registrado.";
