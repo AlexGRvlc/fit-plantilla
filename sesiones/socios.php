@@ -73,8 +73,7 @@ $db->ejecutar();
                 <img src="../public/img/logo.webp" alt="logo" />
             </a>
             <div class="text-center">
-                <!-- <a class="nav-link active text-center" id="inicio" aria-current="page" href="../index.php">Inicio</a> -->
-                <a class="nav-link active text-center" href="../pages/logout.php">Cerrar Sesión</a>
+                <a id="logout" class="nav-link active text-center" href="#">Cerrar Sesión<i class="bi bi-box-arrow-in-right"></i></a>
 
             </div>
         </div>

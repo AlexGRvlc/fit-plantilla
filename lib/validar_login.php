@@ -1,4 +1,4 @@
-<!-- <?php session_start(); ?>  -->
+<?php session_start(); ?>
 
 <?php
 
@@ -11,6 +11,7 @@ ini_set('display_errors', 1);
 
 require "config_conexion.php";
 require_once "recoge.php";
+require "errores.php";
 
 spl_autoload_register(function ($clase) {
     require_once "$clase.php";
@@ -19,6 +20,8 @@ spl_autoload_register(function ($clase) {
 if ($_POST) {
     $email = $_POST['email'];
     $password = $_POST['password'];
+
+    $output = [];
 
 
     if ($email && $password) {
@@ -54,7 +57,7 @@ if ($_POST) {
 
                     $caduca = time() + 365 * 24 * 60 * 60;
 
-                    if ($_POST['sesion_activa'] === 'activo') {
+                    if (isset($_POST['sesion_activa']) && $_POST['sesion_activa'] === 'activo') {
                         setcookie('id', $_SESSION['id_socio'], $caduca, "/");
                         setcookie('nombre', $_SESSION['nombre'], $caduca, "/");
                         setcookie('rol', $_SESSION['rol'], $caduca, "/");
@@ -62,19 +65,26 @@ if ($_POST) {
 
                     $db->cerrar();
 
-                    if ($db_rol == "administrador") {
-                        header("Location: ../sesiones/admin.php");
-                    } else {
-                        header("Location: ../sesiones/socios.php");
-                    }
+
+                    // para redireccionar con javaScript
+                    $output = ["error" => false, "rol" => $db_rol];
+
+                    // if ($db_rol == "administrador") {
+                    //     header("Location: ../sesiones/admin.php");
+                    // } else {
+                    //     header("Location: ../sesiones/socios.php");
+                    // }
                 } else {
-                    echo "Esta contraseña no coincide con la del usuario registrado.";
+                    $output = ["error" => true, "tipo_error" => "Esta contraseña no coincide con la del usuario registrado"];
                 }
             }
         } else {
-            echo "este email no existe, por favor ingresa uno válido o registrate.";
+            $output = ["error" => true, "tipo_error" => "Este email no existe, por favor ingresa uno válido o registrate"];
         }
     } else {
-        echo "Falta algo si o si...";
+        $output = ["error" => true, "tipo_error" => "Los campos no pueden estar vacíos"];
     }
+
+    $json = json_encode($output);
+    echo $json;
 }

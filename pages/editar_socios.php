@@ -1,6 +1,6 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 
 session_start();
 
@@ -75,7 +75,6 @@ $db->despejar();
                 <i class="bi bi-box-arrow-in-up-right">Administración</i>
             </a>
             <div class="text-center">
-                <!-- <a class="nav-link active text-center" id="inicio" aria-current="page" href="../index.php">Inicio</a> -->
                 <a class="nav-link active text-center" href="../pages/logout.php">Cerrar Sesión</a>
             </div>
         </div>
@@ -103,14 +102,7 @@ $db->despejar();
                 </div>
             </div>
 
-            <!-- 
-            4 Opciones:
-                1 - Editar socio > formulario 
-                2 - Confirmar eliminar
-                3 - Eliminar
-                4 - Mostrar los socios con las opciones 
-            -->
-            <!-- 1 -->
+ 
             <?php if (isset($_GET["editar"])) : ?>
 
                 <div class="row">
@@ -172,67 +164,9 @@ $db->despejar();
                     </div>
                 </div>
 
-                <!-- 2 -->
-            <?php elseif (isset($_GET["confir_eliminar"])) : ?>
-
-                <div class="row justify-content-center">
-                    <div class="col-sm-5">
-                        <div class="caja text-center ">
-                            <h2>¿Seguro deseas eliminarlo?</h2>
-                            <a class="btn btn-danger" href='<?php echo "editar_socios.php?eliminar={$_GET['confir_eliminar']}"; ?>'>Sí</a>
-                            <a class="btn btn-warning" href="editar_socios.php">No</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3 -->
-            <?php elseif (isset($_GET["eliminar"])) : ?>
-
-                <div class="row justify-content-center">
-                    <div class="col-sm-5">
-                        <div class="caja text-center ">
-
-                            <?php
-
-                            $eliminar_id_socio = $_GET["eliminar"];
-
-                            $db->setConsulta("SELECT 
-                                                nombre
-                                                FROM socios
-                                                WHERE id_socio = ?");
-
-                            $db->setParam()->bind_param('i', $eliminar_id_socio);
-                            $db->ejecutar();
-                            $resultado = $db->getResultado();
-                            $name = $resultado['nombre'];
-                            $db->despejar();
 
 
-                            $db->setConsulta("DELETE 
-                                                FROM socios 
-                                                WHERE id_socio = ?");
 
-                            $db->setParam()->bind_param('i', $eliminar_id_socio);
-                            $db->ejecutar();
-
-                            if ($db->getFilasAfectadas() > 0) {
-                                echo "Socio eliminado";
-
-                                header("Refresh:2; url=editar_socios.php");
-                                borrarFoto("../pages/fotos/$name");
-                            }
-
-                            $db->despejar();
-
-                            ?>
-
-
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- 4 -->
             <?php else : ?>
 
 
@@ -281,7 +215,7 @@ $db->despejar();
                                         $total_socios = $resultado["total_socios"];
                                         $db->despejar();
 
-                                        
+
                                         $porPagina = 5;           // socios_x_pagina 
                                         $pagina = (isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // página actual
                                         $inicio = ($pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
@@ -318,8 +252,6 @@ $db->despejar();
 
                                             $consulta .= " ORDER BY fecha LIMIT $inicio, $porPagina";
                                             $db->setConsulta($consulta);
-
-
 
                                             // paginación búsqueda
                                             $consulta_busqueda = "SELECT 
@@ -359,9 +291,9 @@ $db->despejar();
                                             $resultado_contador = $db->getResultado();
 
                                             // Obtener el valor del conteo
-                                            $contador = intval($resultado_contador["contador"]);//-------------HERE---------------------------
+                                            $contador = intval($resultado_contador["contador"]); //-------------HERE---------------------------
                                             $consulta_busqueda .= " ORDER BY fecha LIMIT $inicio, $porPagina";
-                                            
+
                                             $paginas = ceil($contador / $porPagina);             // nº total páginas
                                             // Ejecutar la consulta para obtener los resultados de búsqueda
                                             $db->setConsulta($consulta_busqueda);
@@ -373,9 +305,9 @@ $db->despejar();
                                                 // Ejemplo: echo $fila["id_socio"], $fila["nombre_completo"], etc.
                                             }
 
-                                            if ($contador > 1 || $contador == 0 ){
+                                            if ($contador > 1 || $contador == 0) {
                                                 echo "<h4>$contador resultados encontrados</h4>";
-                                            }else {
+                                            } else {
                                                 echo "<h4>$contador resultado encontrado</h4>";
                                             }
                                         } else {
@@ -404,38 +336,62 @@ $db->despejar();
                                         while ($row = $db->getResultado()) {
                                             $contador++;
                                             $fechaFormateada = date('d - m - Y', $row['fecha']);
-                                            echo "<tr>
-                                                <td>$contador</td>
-                                                <td>{$row['nombre_completo']}</td>
-                                                <td>{$row['email']}</td>
-                                                <td>{$row['saldo']}</td>                 
-                                                <td>$fechaFormateada</td>                 
-                                                <td>
-                                                <a href='editar_socios.php?editar={$row['id_socio']}' class='btn btn-success acciones'>
-                                                <i class='bi bi-box-arrow-in-up-right'></i>
-                                                </a>
-                                                <a href='editar_socios.php?confir_eliminar={$row['id_socio']}' class='btn btn-danger acciones'>
-                                                <i class='bi bi-x-circle'></i>
-                                                </a>
-                                                </td>                 
-                                            </tr>";
+                                            echo "<tr data-id = {$row['id_socio']}>
+                                                    <td>$contador</td>
+                                                    <td>{$row['nombre_completo']}</td>
+                                                    <td>{$row['email']}</td>
+                                                    <td>{$row['saldo']}</td>                 
+                                                    <td>$fechaFormateada</td>                 
+                                                    <td>
+                                                   <a id='accion_editar' href='#' 
+                                                    class='btn btn-success acciones' data-toggle='tooltip' title='Editar'>
+                                                    <i class='bi bi-box-arrow-in-up-right'></i>
+                                                    </a>
+                                                    <a href='#' 
+                                                    class='btn btn-danger acciones accion_eliminar' data-toggle='tooltip' title='Eliminar'>
+                                                    <i class='bi bi-x-circle'></i>
+                                                    </a>
+                                                    </td>                 
+                                                </tr>";
                                         }
-
-                                        $db->despejar();
+                                        // id='accion_eliminar' 
+                                         $db->despejar();
 
                                         ?>
+
+
+
                                     </tbody>
                                 </table>
+
+                                <div class="modal fade" id="caja_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Eliminar Socio</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>¿Seguro que deseas eliminarlo?</p>
+                                            </div>
+                                            <div class="modal-footer justify-content-center">
+                                                <button id="no" type="button" class="btn btn-warning rounded" data-bs-dismiss="modal">Cancelar</button>
+                                                <button id="si" type="button" class="btn btn-danger rounded">Eliminar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <?php
 
                                 $anterior = ($pagina - 1);
                                 $siguiente = ($pagina + 1);
 
                                 // variables para la paginación de la búsqueda/normal
-                                if (isset($_GET["busqueda"])){
+                                if (isset($_GET["busqueda"])) {
                                     $pag_anterior = "?pagina=$anterior&busqueda={$_GET['busqueda']}";
                                     $pag_siguiente = "?pagina=$siguiente&busqueda={$_GET['busqueda']}";
-                                }else {
+                                } else {
                                     $pag_anterior = "?pagina=$anterior";
                                     $pag_siguiente = "?pagina=$siguiente";
                                 }
@@ -443,15 +399,15 @@ $db->despejar();
 
                                 ?>
 
-                                <nav aria-label="Page navigation example">
+                                <nav aria-label="nav">
                                     <ul class="pagination justify-content-center"> <!-- Centra los elementos de la paginación -->
 
                                         <!-- 
                                         Opciones para mostrar o no los iconos de previo/posterior
                                         Op-2 -> se muetra o no el de previo 
                                         -->
-                                        <?php 
-                                        
+                                        <?php
+
                                         if ($pagina > 1) : ?>
                                             <li class="page-item">
                                                 <a class="page-link" href='<?php echo "?pagina=$anterior"; ?>' aria-label="Previous">
@@ -462,14 +418,14 @@ $db->despejar();
 
                                         <?php
 
-                                        if (isset($_GET["busqueda"])){
+                                        if (isset($_GET["busqueda"])) {
                                             // Se muestra la página activa y el total de la búsqueda
                                             if ($paginas >= 1) {
                                                 for ($x = 1; $x <= $paginas; $x++) {
                                                     echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x&busqueda={$_GET['busqueda']}'>$x</a></li>"
                                                         : "<li class='page-item'><a class='page-link' href='?pagina=$x&busqueda={$_GET['busqueda']}'>$x</a></li>";
                                                 }
-                                            }                                            
+                                            }
                                         } else {
 
                                             // Se muestra la página activa y el total normal

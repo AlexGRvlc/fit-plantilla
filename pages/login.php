@@ -22,6 +22,7 @@ if ((isset($_SESSION['nombre']) && isset($_SESSION['id_socio']) && isset($_SESSI
     <title>FitGim | Log In</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
@@ -37,9 +38,18 @@ if ((isset($_SESSION['nombre']) && isset($_SESSION['id_socio']) && isset($_SESSI
 
     <div class="container-fluid" id="fondo_login">
         <div class="row">
+
             <div class="col-sm-4 caja col-center rounded" id="login-form">
-                <form action="../lib/validar_login.php" method="POST" role="form" class="rounded">
+                <form id="formulario" method="POST" role="form" class="rounded">
                     <legend class="text-center">Log In</legend>
+                    <div class='alerta alerta_error'>
+                        <div class='alerta_icon'>
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                        <div class='alerta_wrapper'>
+                            <p>Mal, loco, mal...</p>
+                        </div>
+                    </div>
                     <div class="form-group mb-3">
                         <input name="email" type="text" class="form-control" id="" placeholder="usuario">
                     </div>
@@ -47,7 +57,7 @@ if ((isset($_SESSION['nombre']) && isset($_SESSION['id_socio']) && isset($_SESSI
                     <div class="form-group mb-3">
                         <input name="password" type="password" class="form-control" id="password" placeholder="contraseña">
                     </div>
-                    <button type="submit" class="btn btn-primary rounded me-3">Ingresar</button>
+                    <button type="button" id="btn" class="btn btn-primary rounded me-3">Ingresar</button>
                     <a class="float-end" href="registro.php">Registrarse</a>
                     <label for="sesion_activa" class="checkbox-inline">
                         <input name="sesion_activa" type="checkbox" value="activo"> Mantener sesión iniciada
