@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-
+// Asegura el redireccionamiento si la sesión está iniciada
 if ((isset($_SESSION['nombre']) && isset($_SESSION['id_socio']) && isset($_SESSION['rol'])) || isset($_COOKIE['nombre'])) {
 
     if (isset($_COOKIE['nombre'])) {
@@ -47,7 +47,6 @@ if ((isset($_SESSION['nombre']) && isset($_SESSION['id_socio']) && isset($_SESSI
                             <i class="bi bi-x-circle"></i>
                         </div>
                         <div class='alerta_wrapper'>
-                            <p>Mal, loco, mal...</p>
                         </div>
                     </div>
                     <div class="form-group mb-3">
@@ -57,7 +56,7 @@ if ((isset($_SESSION['nombre']) && isset($_SESSION['id_socio']) && isset($_SESSI
                     <div class="form-group mb-3">
                         <input name="password" type="password" class="form-control" id="password" placeholder="contraseña">
                     </div>
-                    <button type="button" id="btn" class="btn btn-primary rounded me-3">Ingresar</button>
+                    <button type="button" id="btn_login" class="btn btn-primary rounded me-3">Ingresar</button>
                     <a class="float-end" href="registro.php">Registrarse</a>
                     <label for="sesion_activa" class="checkbox-inline">
                         <input name="sesion_activa" type="checkbox" value="activo"> Mantener sesión iniciada

@@ -1,6 +1,6 @@
 <?php
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 session_start();
 
@@ -46,9 +46,9 @@ $db->ejecutar();
 
 $resultado = $db->getResultado();
 
-$sesion_id = $resultado['id_socio'];
-$nombre_socio = $resultado['nombre_completo'];
-$imagen_socio = $resultado['imagen'];
+$sesion_id = $_SESSION['id_socio'] ?? "";
+$nombre_socio = $_SESSION['nombre'] ?? "";
+$imagen_socio = $_SESSION['imagen'] ?? "";
 $db->despejar();
 
 ?>
@@ -75,7 +75,7 @@ $db->despejar();
                 <i class="bi bi-box-arrow-in-up-right">Administración</i>
             </a>
             <div class="text-center">
-                <a class="nav-link active text-center" href="../pages/logout.php">Cerrar Sesión</a>
+                <a class="nav-link active text-center" href="../pages/logout.php">Cerrar Sesión<i class="bi bi-box-arrow-in-right"></i></a>
             </div>
         </div>
     </nav>
@@ -102,135 +102,160 @@ $db->despejar();
                 </div>
             </div>
 
- 
-            <?php if (isset($_GET["editar"])) : ?>
-
-                <div class="row">
-                    <div class="col-sm-5">
-
-                        <?php
-
-                        $id = $_GET["editar"];
-
-                        if (isset($_GET["editar"])) {
-                            $id = $_GET["editar"];  // Redundante!
-
-                            // Obtener los datos del socio a editar
-                            $datos_socio = $db->getSocioPorId($id);
-
-                            // Vincular los datos obtenidos al formulario
-                            $editar_nombre = $datos_socio['nombre'];
-                            $editar_apellido = $datos_socio['apellido'];
-                            $editar_email = $datos_socio['email'];
-                            $editar_saldo = $datos_socio['saldo'];
-                            $editar_imagen = $datos_socio['imagen'];
-                        }
-                        $db->despejar();
-
-                        ?>
-
-                        <form action="../lib/actualizar_socio.php" enctype="multipart/form-data" method="POST" role="form" class="rounded" id="registro_form">
-                            <legend class="text-center">Editar Socio</legend>
-
-                            <div class="form-group mb-3">
-                                <input name="id" id="id" type="hidden" class="form-control" value="<?php echo $id; ?>">
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <input name="nombre" id="nombre" type="text" class="form-control" value="<?php echo $editar_nombre; ?>">
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <input name="apellido" type="text" class="form-control" id="" value="<?php echo $editar_apellido; ?>">
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <input name="email" type="mail" class="form-control" id="" value="<?php echo $editar_email; ?>">
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <input name="saldo" type="number" min="50" class="form-control" id="" placeholder="saldo" value="<?php echo $editar_saldo; ?>">
-                            </div>
-
-                            <div class="input-group mb-3">
-                                <p>Selecciona tu imagen de perfil (opcional)</p>
-                                <input name="foto" type="file" class="form-control rounded" id="foto">
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary rounded">Actualizar</button>
-                                <a href="editar_socios.php" class="btn btn-warning rounded">Cancelar</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
 
 
+            <div class="row">
+                <div class="col-sm-5">
 
+                    <?php
 
-            <?php else : ?>
+                    // $id = $_GET["editar"];
 
+                    if (isset($_GET["editar"])) {
+                        $id = $_GET["editar"];  // Redundante!
 
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="caja">
-                            <div class="caja-cabecera">
-                                <h1><i class="bi bi-people"></i>Edita o elimina algún socio</h1>
+                        // Obtener los datos del socio a editar
+                        $datos_socio = $db->getSocioPorId($id);
 
-                                <!-- MODIFICAR -->
-                                <div class="col-sm-4 float-end">
-                                    <form action="" id="busqueda" method="GET">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" name="busqueda" placeholder="Ingrese su búsqueda">
-                                            <!-- <input type="text" placeholder="Ingrese su búsqueda"> -->
-                                            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Button</button>
+                        // Vincular los datos obtenidos al formulario
+                        $editar_nombre = $datos_socio['nombre'];
+                        $editar_apellido = $datos_socio['apellido'];
+                        $editar_email = $datos_socio['email'];
+                        $editar_saldo = $datos_socio['saldo'];
+                        $editar_imagen = $datos_socio['imagen'];
+                    }
+                    $db->despejar();
+
+                    ?>
+
+                    <!-- Modal -->
+                    <!-- <div id="fondo_oscuro"></div> -->
+                    <div class="modal fade rounded " id="modal_editar" enctype="multipart/form-data" tabindex="-1" aria-labelledby="modal_editar_label" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modal_editar_label">Editar Socio</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="form_editar">
+                                        <input type="hidden" id="edit_id" name="id">
+                                        <div class="mb-3">
+                                            <label for="edit_nombre" class="form-label">Nombre</label>
+                                            <input type="text" class="form-control" id="edit_nombre" name="nombre">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="edit_apellido" class="form-label">Apellido</label>
+                                            <input type="text" class="form-control" id="edit_apellido" name="apellido">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="edit_email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="edit_email" name="email">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="edit_saldo" class="form-label">Saldo</label>
+                                            <input type="number" class="form-control" id="edit_saldo" name="saldo">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="edit_foto" class="form-label">Foto</label>
+                                            <input type="file" class="form-control" id="edit_foto" name="foto">
+                                        </div>
+
+                                        <div class='alerta alerta_error'>
+                                            <div class='alerta_icon'>
+                                                <i class="bi bi-x-circle"></i>
+                                            </div>
+                                            <div class='alerta_wrapper'>
+                                            </div>
+                                        </div>
+                                        <div class='alerta alerta_success'>
+                                            <div class='alerta_icon'>
+                                                <i class="bi bi-x-circle"></i>
+                                            </div>
+                                            <div class='alerta_wrapper'>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center">
+                                            <button type="submit" class="btn btn-primary rounded btn_actualizar">Actualizar</button>
                                         </div>
                                     </form>
                                 </div>
-
-
                             </div>
-                            <div class="caja">
-                                <table class="table table-cell">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Nombre</th>
-                                            <th>Email</th>
-                                            <th>Saldo</th>
-                                            <th>Fecha</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                                        <?php
 
-                                        // consulta para contar el número total de socios
-                                        // para la paginación
-                                        $db->setConsulta("SELECT
+
+
+
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="caja">
+                        <div class="caja-cabecera">
+                            <h1><i class="bi bi-people"></i>Edita o elimina algún socio</h1>
+
+                            <!-- MODIFICAR -->
+                            <div class="col-sm-4 float-end">
+                                <form action="" id="busqueda" method="GET">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="busqueda" placeholder="Ingrese su búsqueda">
+                                        <!-- <input type="text" placeholder="Ingrese su búsqueda"> -->
+                                        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Button</button>
+                                    </div>
+                                    <div class="reset">
+                                        <button class="btn btn-outline-secondary" id="limpiarBusqueda">Limpiar Búsqueda</button>
+                                    </div>
+                                </form>
+                            </div>
+
+
+                        </div>
+                        <div class="caja">
+                            <table class="table table-cell">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Saldo</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <?php
+
+                                    // consulta para contar el número total de socios
+                                    // para la paginación
+                                    $db->setConsulta("SELECT
                                             COUNT(id_socio) AS total_socios
                                             FROM socios");
-                                        $db->ejecutar();
-                                        $resultado = $db->getResultado();
-                                        $total_socios = $resultado["total_socios"];
-                                        $db->despejar();
+                                    $db->ejecutar();
+                                    $resultado = $db->getResultado();
+                                    $total_socios = $resultado["total_socios"];
+                                    $db->despejar();
 
 
-                                        $porPagina = 5;           // socios_x_pagina 
-                                        $pagina = (isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // página actual
-                                        $inicio = ($pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
+                                    $porPagina = 5;           // socios_x_pagina 
+                                    $pagina = (isset($_GET["pagina"])) ? (int)$_GET['pagina'] : 1;     // página actual
+                                    $inicio = ($pagina - 1) * $porPagina; // indice de inicio xra consulta paginada
 
 
 
-                                        if (isset($_GET["busqueda"])) {
+                                    if (isset($_GET["busqueda"])) {
 
-                                            if (empty($_GET["busqueda"])) {
-                                                echo "Error";
-                                                exit;
-                                            }
+                                        if (empty($_GET["busqueda"])) {
+                                            echo "Error";
+                                            exit;
+                                        }
 
-
-                                            $consulta = "SELECT 
+                                        // Consulta para mostrar la info del socio/s buscado/s
+                                        $consulta = "SELECT 
                                             id_socio,
                                             CONCAT(nombre, ' ', apellido) AS nombre_completo, 
                                             email, 
@@ -239,22 +264,25 @@ $db->despejar();
                                             FROM socios 
                                             WHERE 1=1";
 
-                                            $busqueda_nombres = explode(" ", $_GET["busqueda"]);
+                                        $busqueda = trim($_GET["busqueda"]); // Eliminar espacios en blanco
 
-                                            $condiciones = [];
-                                            foreach ($busqueda_nombres as $nombre) {
-                                                $condiciones[] = "nombre LIKE '%" . $nombre . "%'";
-                                            }
 
-                                            if (count($condiciones) > 0) {
-                                                $consulta .= " AND (" . implode(" OR ", $condiciones) . ")";
-                                            }
+                                        $busqueda_nombres = explode(" ", $busqueda);
 
-                                            $consulta .= " ORDER BY fecha LIMIT $inicio, $porPagina";
-                                            $db->setConsulta($consulta);
+                                        $condiciones = [];
+                                        foreach ($busqueda_nombres as $nombre) {
+                                            $condiciones[] = "(nombre LIKE '%" . $nombre . "%' OR apellido LIKE '%" . $nombre . "%')";
+                                        }
 
-                                            // paginación búsqueda
-                                            $consulta_busqueda = "SELECT 
+                                        if (count($condiciones) > 0) {
+                                            $consulta .= " AND (" . implode(" OR ", $condiciones) . ")";
+                                        }
+
+                                        $consulta .= " ORDER BY fecha LIMIT $inicio, $porPagina";
+                                        $db->setConsulta($consulta);
+
+                                        // paginación búsqueda
+                                        $consulta_busqueda = "SELECT 
                                                                       id_socio,
                                                                       CONCAT(nombre, ' ', apellido) AS nombre_completo, 
                                                                       email, 
@@ -263,60 +291,63 @@ $db->despejar();
                                                                   FROM socios 
                                                                   WHERE ";
 
-                                            $condiciones = [];
-                                            foreach ($busqueda_nombres as $nombre) {
-                                                $condiciones[] = "nombre LIKE '%" . $nombre . "%'";
-                                            }
 
-                                            if (count($condiciones) > 0) {
-                                                $consulta_busqueda .= implode(" OR ", $condiciones);
-                                            } else {
-                                                // Si no hay condiciones, seleccionar todos los socios
-                                                $consulta_busqueda .= "1";
-                                            }
 
-                                            // Consulta de conteo
-                                            $consulta_contador = "SELECT COUNT(id_socio) AS contador FROM socios WHERE ";
 
-                                            if (count($condiciones) > 0) {
-                                                $consulta_contador .= implode(" OR ", $condiciones);
-                                            } else {
-                                                // Si no hay condiciones, contar todos los socios
-                                                $consulta_contador .= "1";
-                                            }
+                                        $condiciones = [];
+                                        foreach ($busqueda_nombres as $nombre) {
+                                            $condiciones[] = "(nombre LIKE '%" . $nombre . "%' OR apellido LIKE '%" . $nombre . "%')";
+                                        }
 
-                                            // Ejecutar la consulta de conteo
-                                            $db->setConsulta($consulta_contador);
-                                            $db->ejecutar();
-                                            $resultado_contador = $db->getResultado();
-
-                                            // Obtener el valor del conteo
-                                            $contador = intval($resultado_contador["contador"]); //-------------HERE---------------------------
-                                            $consulta_busqueda .= " ORDER BY fecha LIMIT $inicio, $porPagina";
-
-                                            $paginas = ceil($contador / $porPagina);             // nº total páginas
-                                            // Ejecutar la consulta para obtener los resultados de búsqueda
-                                            $db->setConsulta($consulta_busqueda);
-                                            $db->ejecutar();
-
-                                            // Mostrar los resultados
-                                            while ($fila = $db->getResultado()) {
-                                                // Procesar y mostrar cada fila de resultado aquí
-                                                // Ejemplo: echo $fila["id_socio"], $fila["nombre_completo"], etc.
-                                            }
-
-                                            if ($contador > 1 || $contador == 0) {
-                                                echo "<h4>$contador resultados encontrados</h4>";
-                                            } else {
-                                                echo "<h4>$contador resultado encontrado</h4>";
-                                            }
+                                        if (count($condiciones) > 0) {
+                                            $consulta_busqueda .= implode(" OR ", $condiciones);
                                         } else {
+                                            // Si no hay condiciones, seleccionar todos los socios
+                                            $consulta_busqueda .= "1";
+                                        }
 
-                                            $paginas = ceil($total_socios / $porPagina);             // nº total páginas
+                                        // Consulta de conteo
+                                        $consulta_contador = "SELECT COUNT(id_socio) AS contador FROM socios WHERE ";
 
-                                            // Datos necesarios para paginar las salidas de socios
-                                            // por pantalla. 
-                                            $consulta = "SELECT 
+                                        if (count($condiciones) > 0) {
+                                            $consulta_contador .= implode(" OR ", $condiciones);
+                                        } else {
+                                            // Si no hay condiciones, contar todos los socios
+                                            $consulta_contador .= "1";
+                                        }
+
+                                        // Ejecutar la consulta de conteo
+                                        $db->setConsulta($consulta_contador);
+                                        $db->ejecutar();
+                                        $resultado_contador = $db->getResultado();
+
+                                        // Obtener el valor del conteo
+                                        $contador = intval($resultado_contador["contador"]); //-------------HERE---------------------------
+                                        $consulta_busqueda .= " ORDER BY fecha LIMIT $inicio, $porPagina";
+
+                                        $paginas = ceil($contador / $porPagina);             // nº total páginas
+                                        // Ejecutar la consulta para obtener los resultados de búsqueda
+                                        $db->setConsulta($consulta_busqueda);
+                                        $db->ejecutar();
+
+                                        // Mostrar los resultados
+                                        while ($fila = $db->getResultado()) {
+                                            // Procesar y mostrar cada fila de resultado aquí
+                                            // Ejemplo: echo $fila["id_socio"], $fila["nombre_completo"], etc.
+                                        }
+
+                                        if ($contador > 1 || $contador == 0) {
+                                            echo "<h4>$contador resultados encontrados</h4>";
+                                        } else {
+                                            echo "<h4>$contador resultado encontrado</h4>";
+                                        }
+                                    } else {
+
+                                        $paginas = ceil($total_socios / $porPagina);             // nº total páginas
+
+                                        // Datos necesarios para paginar las salidas de socios
+                                        // por pantalla. 
+                                        $consulta = "SELECT 
                                             id_socio,
                                             CONCAT (nombre, ' ', apellido)  AS nombre_completo, 
                                             email, 
@@ -325,26 +356,48 @@ $db->despejar();
                                             FROM socios 
                                             ORDER BY fecha
                                             LIMIT $inicio, $porPagina";
-                                            $db->setConsulta($consulta);
-                                        }
+                                        $db->setConsulta($consulta);
+                                    }
 
 
-                                        $db->ejecutar();
-                                        $contador = $inicio;
+                                    $db->ejecutar();
+                                    $contador = $inicio;
 
-                                        // Creación de la tabla con los resultados de BD
-                                        while ($row = $db->getResultado()) {
-                                            $contador++;
-                                            $fechaFormateada = date('d - m - Y', $row['fecha']);
-                                            echo "<tr data-id = {$row['id_socio']}>
+                                    // Creación de la tabla con los resultados de BD
+                                    while ($row = $db->getResultado()) {
+                                        $contador++;
+
+
+                                        // Separar el nombre y el apellido
+                                        $nombre_completo = $row['nombre_completo'];
+                                        $nombres = explode(' ', $nombre_completo);
+                                        $nombre = $nombres[0]; // Primer nombre
+                                        $apellido = end($nombres); // Último nombre (apellido)
+
+                                        // Definir otras variables
+                                        $id_socio = $row['id_socio'];
+                                        $email = $row['email'];
+                                        $saldo = $row['saldo'];
+
+
+                                        $fechaFormateada = date('d - m - Y', $row['fecha']);
+                                        echo "<tr data-id = {$row['id_socio']}>
                                                     <td>$contador</td>
                                                     <td>{$row['nombre_completo']}</td>
                                                     <td>{$row['email']}</td>
                                                     <td>{$row['saldo']}</td>                 
                                                     <td>$fechaFormateada</td>                 
                                                     <td>
-                                                   <a id='accion_editar' href='#' 
-                                                    class='btn btn-success acciones' data-toggle='tooltip' title='Editar'>
+                                                    <a href='#' 
+                                                    class='btn btn-success acciones accion_editar' 
+                                                    data-id='{$id_socio}' 
+                                                    data-nombre='{$nombre}' 
+                                                    data-apellido='{$apellido}' 
+                                                    data-email='{$email}' 
+                                                    data-saldo='{$saldo}'
+                                                    data-bs-toggle='modal'
+                                                    data-bs-target='#modal_editar' 
+                                                    title='Editar'>
                                                     <i class='bi bi-box-arrow-in-up-right'></i>
                                                     </a>
                                                     <a href='#' 
@@ -353,109 +406,108 @@ $db->despejar();
                                                     </a>
                                                     </td>                 
                                                 </tr>";
-                                        }
-                                        // id='accion_eliminar' 
-                                         $db->despejar();
+                                    }
+                                    // id='accion_eliminar' 
+                                    $db->despejar();
 
-                                        ?>
+                                    ?>
 
 
 
-                                    </tbody>
-                                </table>
+                                </tbody>
+                            </table>
 
-                                <div class="modal fade" id="caja_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-sm">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Eliminar Socio</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>¿Seguro que deseas eliminarlo?</p>
-                                            </div>
-                                            <div class="modal-footer justify-content-center">
-                                                <button id="no" type="button" class="btn btn-warning rounded" data-bs-dismiss="modal">Cancelar</button>
-                                                <button id="si" type="button" class="btn btn-danger rounded">Eliminar</button>
-                                            </div>
+                            <div class="modal fade" id="caja_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Eliminar Socio</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>¿Seguro que deseas eliminarlo?</p>
+                                        </div>
+                                        <div class="modal-footer justify-content-center">
+                                            <button id="no" type="button" class="btn btn-warning rounded" data-bs-dismiss="modal">Cancelar</button>
+                                            <button id="si" type="button" class="btn btn-danger rounded">Eliminar</button>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <?php
+                            <?php
 
-                                $anterior = ($pagina - 1);
-                                $siguiente = ($pagina + 1);
+                            $anterior = ($pagina - 1);
+                            $siguiente = ($pagina + 1);
 
-                                // variables para la paginación de la búsqueda/normal
-                                if (isset($_GET["busqueda"])) {
-                                    $pag_anterior = "?pagina=$anterior&busqueda={$_GET['busqueda']}";
-                                    $pag_siguiente = "?pagina=$siguiente&busqueda={$_GET['busqueda']}";
-                                } else {
-                                    $pag_anterior = "?pagina=$anterior";
-                                    $pag_siguiente = "?pagina=$siguiente";
-                                }
+                            // variables para la paginación de la búsqueda/normal
+                            if (isset($_GET["busqueda"])) {
+                                $pag_anterior = "?pagina=$anterior&busqueda={$_GET['busqueda']}";
+                                $pag_siguiente = "?pagina=$siguiente&busqueda={$_GET['busqueda']}";
+                            } else {
+                                $pag_anterior = "?pagina=$anterior";
+                                $pag_siguiente = "?pagina=$siguiente";
+                            }
 
 
-                                ?>
+                            ?>
 
-                                <nav aria-label="nav">
-                                    <ul class="pagination justify-content-center"> <!-- Centra los elementos de la paginación -->
+                            <nav aria-label="nav">
+                                <ul class="pagination justify-content-center"> <!-- Centra los elementos de la paginación -->
 
-                                        <!-- 
+                                    <!-- 
                                         Opciones para mostrar o no los iconos de previo/posterior
                                         Op-2 -> se muetra o no el de previo 
                                         -->
-                                        <?php
+                                    <?php
 
-                                        if ($pagina > 1) : ?>
-                                            <li class="page-item">
-                                                <a class="page-link" href='<?php echo "?pagina=$anterior"; ?>' aria-label="Previous">
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
+                                    if ($pagina > 1) : ?>
+                                        <li class="page-item">
+                                            <a class="page-link" href='<?php echo "?pagina=$anterior"; ?>' aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
 
-                                        <?php
+                                    <?php
 
-                                        if (isset($_GET["busqueda"])) {
-                                            // Se muestra la página activa y el total de la búsqueda
-                                            if ($paginas >= 1) {
-                                                for ($x = 1; $x <= $paginas; $x++) {
-                                                    echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x&busqueda={$_GET['busqueda']}'>$x</a></li>"
-                                                        : "<li class='page-item'><a class='page-link' href='?pagina=$x&busqueda={$_GET['busqueda']}'>$x</a></li>";
-                                                }
-                                            }
-                                        } else {
-
-                                            // Se muestra la página activa y el total normal
-                                            if ($paginas >= 1) {
-                                                for ($x = 1; $x <= $paginas; $x++) {
-                                                    echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x'>$x</a></li>"
-                                                        : "<li class='page-item'><a class='page-link' href='?pagina=$x'>$x</a></li>";
-                                                }
+                                    if (isset($_GET["busqueda"])) {
+                                        // Se muestra la página activa y el total de la búsqueda
+                                        if ($paginas >= 1) {
+                                            for ($x = 1; $x <= $paginas; $x++) {
+                                                echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x&busqueda={$_GET['busqueda']}'>$x</a></li>"
+                                                    : "<li class='page-item'><a class='page-link' href='?pagina=$x&busqueda={$_GET['busqueda']}'>$x</a></li>";
                                             }
                                         }
+                                    } else {
+
+                                        // Se muestra la página activa y el total normal
+                                        if ($paginas >= 1) {
+                                            for ($x = 1; $x <= $paginas; $x++) {
+                                                echo ($x == $pagina) ? "<li class='page-item active'><a class='page-link' href='?pagina=$x'>$x</a></li>"
+                                                    : "<li class='page-item'><a class='page-link' href='?pagina=$x'>$x</a></li>";
+                                            }
+                                        }
+                                    }
 
 
-                                        ?>
-                                        <!-- Op-2 -> se muetra o no el de anterior -->
-                                        <?php if ($pagina < $paginas) : ?>
-                                            <li class="page-item">
-                                                <a class="page-link" href='<?php echo "?pagina=$siguiente"; ?>' aria-label="Next">
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
-                                    </ul>
-                                </nav>
-                            </div>
+                                    ?>
+                                    <!-- Op-2 -> se muestra o no el de anterior -->
+                                    <?php if ($pagina < $paginas) : ?>
+                                        <li class="page-item">
+                                            <a class="page-link" href='<?php echo "?pagina=$siguiente"; ?>' aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                            </nav>
                         </div>
                     </div>
                 </div>
+            </div>
         </div>
 
-    <?php endif; ?>
 
     </div>
 

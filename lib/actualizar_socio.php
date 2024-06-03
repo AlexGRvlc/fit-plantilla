@@ -9,7 +9,8 @@ spl_autoload_register(function ($clase) {
     require_once "../lib/$clase.php";
 });
 
-// Recogida info del formulario de editar_socios.php
+$output = [];
+
 if (isset($_POST["id"])) {
     $id = $_POST["id"];
     $nombre_actualizado = $_POST["nombre"];
@@ -18,7 +19,7 @@ if (isset($_POST["id"])) {
     $saldo_actualizado = $_POST["saldo"];
     $foto  = $_FILES["foto"];
 
-    $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME); // instancia Obj BD
+    $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     $consulta = "UPDATE socios
                  SET nombre = ?,
@@ -30,7 +31,9 @@ if (isset($_POST["id"])) {
     $db->setConsulta($consulta);
 
     if ($db->setParam() === false) {
-        echo "Error al preparar la consulta: ";
+        $output = ["estado" => "fail", "msg" => "Error al preparar la consulta"];
+        echo json_encode($output);
+        exit;
     }
 
     $db->setParam()->bind_param(
@@ -45,41 +48,41 @@ if (isset($_POST["id"])) {
     if ($foto["name"]) {
         if (validar_foto($nombre_actualizado, true)) {
             if ($db->setParam()->errno) {
-                echo "Error al asignar parámetros: ";
+                $output = ["estado" => "fail", "msg" => "Error al asignar parámetros"];
+                echo json_encode($output);
+                exit;
             }
 
             if ($db->ejecutar()) {
-
-                echo "¡Actualización exitosa!";
-                header("Refresh:2; url=../pages/editar_socios.php");
+                $output = ["estado" => "ok", "msg" => "¡Actualización exitosa!"];
             } else {
-                echo "Error al ejecutar la consulta: ";
+                $output = ["estado" => "fail", "msg" => "Error al ejecutar la consulta"];
             }
 
             $db->despejar();
         }
     } else {
-
         if ($db->setParam()->errno) {
-            echo "Error al asignar parámetros: ";
+            $output = ["estado" => "fail", "msg" => "Error al asignar parámetros"];
+            echo json_encode($output);
+            exit;
         }
 
         if ($db->ejecutar()) {
-
-            echo "¡Actualización exitosa!";
-            header("Refresh:2; url=../pages/editar_socios.php");
+            $output = ["estado" => "ok", "msg" => "¡Actualización exitosa!"];
         } else {
-            echo "Error al ejecutar la consulta: ";
+            $output = ["estado" => "fail", "msg" => "Error al ejecutar la consulta"];
         }
 
         $db->despejar();
     }
+
+    echo json_encode($output);
+    exit;
 } else {
-    echo "Error: ID no recibido.";
+    $output = ["estado" => "fail", "msg" => "Error: ID no recibido"];
+    echo json_encode($output);
+    exit;
 }
+
 ?>
-<br>
-<br>
-<br>
-<br>
-<a href="../pages/editar_socios.php">volver a editar_socios.php</a>

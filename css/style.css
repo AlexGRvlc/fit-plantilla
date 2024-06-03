@@ -122,6 +122,7 @@ input {
 .alerta_success a,
 .alerta_success a:hover {
   color: #5d9514;
+  display: none;
 }
 
 /* NAVBAR */
@@ -159,10 +160,21 @@ input {
 }
 
 #foto {
-  /* all: unset; */
   border: 1px solid #e2e5e9;
   width: 100%;
   padding: 5px;
+}
+
+#registro_completado {
+  display: none;
+}
+
+#formulario_registro {
+  margin-top: 150px;
+}
+
+#caja_form_registro {
+  margin-top: 150px;
 }
 
 /* SESIONES */
@@ -272,4 +284,33 @@ input {
 
 .caja-cabecera h3 {
   display: inline-block;
+}
+
+#modal_editar {
+  display: none;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  /* background-color: rgba(0,0,0,0.5); */
+  overflow: auto;
+  margin-top: 50px;
+}
+
+
+
+#fondo_oscuro {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: none;
+}
+
+
+#limpiarBusqueda {
+  display: none;
 }

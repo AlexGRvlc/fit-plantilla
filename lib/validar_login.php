@@ -10,9 +10,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require "config_conexion.php";
-require_once "recoge.php";
-require "errores.php";
-
 spl_autoload_register(function ($clase) {
     require_once "$clase.php";
 });

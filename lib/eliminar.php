@@ -10,8 +10,6 @@ $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 if (isset($_POST["eliminar"])) {
 
-    var_dump($_POST["eliminar"]);
-
     $eliminar = $_POST["eliminar"];
 
     $db->setConsulta("SELECT 
@@ -47,7 +45,12 @@ if (isset($_POST["eliminar"])) {
     $db->despejar();
 
     exit;
-};
+} else {
+    error_log("No se recibió el parámetro 'eliminar'");
+    $output = ["estado" => "fail", "msg" => "No se recibió el parámetro 'eliminar'"];
+    echo json_encode($output);
+    exit;
+}
 
 ?>
     <?php require '../inc/footer.inc'; ?>

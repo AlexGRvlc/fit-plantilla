@@ -3,81 +3,163 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+ini_set('log_errors', "On");
+ini_set('error_log', '/home/alex/Escritorio/debug.log');
+
+error_log("Inicio del script validar_registro.php");
 
 require_once "validar_foto.php";
 require_once "config_conexion.php";
 spl_autoload_register(function ($clase) {
     require_once "$clase.php";
 });
+
 global $form_ok;
 $password_ok = false;
+$output = [];
+$path_foto = '';
+
+$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 // Verificar si se ha enviado el formulario
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    error_log("Formulario enviado mediante POST");
+
     // Obtener datos del formulario
     $nombre = strtolower($_POST['nombre'] ?? '');
     $apellido = strtolower($_POST['apellido'] ?? '');
-    $email = $_POST['email'];
-    $password = $_POST['contrasena'];
-    $confirm_pass = $_POST['confirm-contrasena'];
-    $saldo = $_POST['saldo'];
-    $foto = $_FILES['foto'];
+    $email = $_POST['email'] ?? "";
+    $password = $_POST['contrasena'] ?? "";
+    $confirm_pass = $_POST['confirm-contrasena'] ?? "";
+    $saldo = $_POST['saldo'] ?? "";
+    $foto = $_FILES['foto'] ?? "";
+
+    error_log("Datos recibidos: nombre=$nombre, apellido=$apellido, email=$email, saldo=$saldo");
 
     if ($nombre && $apellido && $email && $password && $confirm_pass && $saldo) {
-        $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
         $expreg = '/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/';
 
         if (preg_match($expreg, $email)) { // preg_match - comparación con expresión regular
+            error_log("Email válido");
 
             if (strlen($password) > 6) {
-
+                error_log("Contraseña válida");
                 $password_ok = true;
             } else {
-                echo "La contraseña debe ser mayor a 6 caracteres";
+                $output = ["error" => true, "tipo_error" => "La contraseña debe ser mayor a 6 caracteres"];
+                error_log("Contraseña demasiado corta");
             }
         } else {
-            echo "email erróneo!";
+            $output = ["error" => true, "tipo_error" => "Email erróneo, por favor, inténtalo de nuevo"];
+            error_log("Email no válido");
         }
     } else {
-        echo "<br>algo falla...";
+        $output = ["error" => true, "tipo_error" => "Ninguno de los campos obligatorios puede quedar vacío"];
+        error_log("Faltan campos obligatorios");
     }
 }
 
+
+if (isset($db)){
+
+
+    // Verificar si el email ya está registrado
+    $consulta_email = "SELECT COUNT(*) AS total FROM socios WHERE email = ?";
+    $db->setConsulta($consulta_email);
+    $db->setParam()->bind_param('s', $email);
+    $db->ejecutar();
+    $resultado_email = $db->getResultado();
+    $total_registros = $resultado_email['total'];
+    
+    if ($total_registros > 0) {
+        $output = ["error" => true, "tipo_error" => "Este email ya está registrado"];
+        error_log("El email ya está registrado");
+    } else {
+        // Aquí puedes continuar con el proceso de inserción del nuevo usuario
+        // Verificar si las contraseñas coinciden, validar la foto, etc.
+    }
+
+}
+
+
+
+
+
+
+
+
 if ($password_ok) {
     if ($password === $confirm_pass) {
+        error_log("Las contraseñas coinciden");
 
         $validar_email = $db->validarDatos('email', 'socios', $email);
 
         if ($validar_email === 0) {
+            error_log("El email no está registrado");
 
             // Generando el hash/encriptación de la contraseña:
-            $hasher =  new PasswordHash(8, FALSE);
+            $hasher = new PasswordHash(8, FALSE);
             $hash = $hasher->HashPassword($password);
 
             $path_foto = validar_foto($nombre);
             if ($path_foto) {
+                error_log("Foto validada: $path_foto");
+
+
+
+
+                
+
+
+
+
+
+
+
+
                 $fecha = time();
                 $consulta = "INSERT INTO socios (nombre, apellido, contrasena, email, saldo, imagen, fecha) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 if ($db->setConsulta($consulta)) {
                     $db->setParam()->bind_param('ssssisi', $nombre, $apellido, $hash, $email, $saldo, $path_foto, $fecha);
                     if ($db->ejecutar()) {
-                        echo "Te has registrado con éxito!";
+                        $output = ["error" => false, "tipo_error" => "", "path_foto" => $path_foto];
                         $form_ok = true;
                         $db->cerrar();
+                        error_log("Registro insertado correctamente");
                     } else {
-                        echo "Error al ejecutar la consulta.";
+                        $output = ["error" => true, "tipo_error" => "Error al ejecutar la consulta."];
+                        error_log("Error al ejecutar la consulta");
                     }
                 } else {
-                    echo "Error al preparar la consulta.";
-                }
+                    $output = ["error" => true, "tipo_error" => "Error al preparar la consulta."];
+                    error_log("Error al preparar la consulta");
+                }               
             } else {
-                echo $error;
+                $output = ["error" => true, "tipo_error" => "Ha ocurrido un error"];
+                error_log("Error al validar la foto");
             }
         } else {
-            echo "Ese email ya está registrado!";
+            $output = ["error" => true, "tipo_error" => "Este email ya está registrado"];
+            error_log("El email ya está registrado");
         }
     } else {
-        echo "Las contraseñas no coinciden!";
+        $output = ["error" => true, "tipo_error" => "Las contraseñas no coinciden"];
+        error_log("Las contraseñas no coinciden");
     }
+} else {
+    error_log("Contraseña no válida o no se ha enviado el formulario");
 }
+
+// Modifica la salida JSON para incluir el path_foto
+if ($form_ok) {
+    $output = ["error" => false, "tipo_error" => "", "path_foto" => $path_foto];
+} else {
+    $output["path_foto"] = $path_foto; 
+}
+
+$json = json_encode($output);
+echo $json;
+error_log("Fin del script validar_registro.php");
+
+?>
