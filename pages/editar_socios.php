@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-session_start();
+// session_start();
 
 // Requerimientos de apoyo
 require_once "../lib/config_conexion.php";
@@ -64,17 +64,17 @@ $db->despejar();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
-<body>
+<body>  
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" id="fondo_nav">
         <div class="container-fluid nav_bar">
             <a class="navbar-brand" href="../index.php">
                 <img src="../public/img/logo.webp" alt="logo" />
             </a>
-            <a href="../sesiones/admin.php">
+            <a class="nav-link editar-nav" href="../sesiones/admin.php">
                 <i class="bi bi-box-arrow-in-up-right">Administración</i>
             </a>
-            <div class="text-center">
+            <div class="text-center cerrar-nav">
                 <a class="nav-link active text-center" href="../pages/logout.php">Cerrar Sesión<i class="bi bi-box-arrow-in-right"></i></a>
             </div>
         </div>
@@ -133,7 +133,7 @@ $db->despejar();
                     <div class="modal fade rounded " id="modal_editar" enctype="multipart/form-data" tabindex="-1" aria-labelledby="modal_editar_label" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
-                                <div class="modal-header">
+                                <div id="header_editar" class="modal-header">
                                     <h5 class="modal-title" id="modal_editar_label">Editar Socio</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
@@ -204,11 +204,11 @@ $db->despejar();
                                     <div class="input-group">
                                         <input type="text" class="form-control" name="busqueda" placeholder="Ingrese su búsqueda">
                                         <!-- <input type="text" placeholder="Ingrese su búsqueda"> -->
-                                        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Button</button>
+                                        <button id="btn_buscar" class="btn btn-outline-secondary" type="submit" id="button-addon2">Buscar</button>
                                     </div>
-                                    <div class="reset">
+                                    <!-- <div class="reset">
                                         <button class="btn btn-outline-secondary" id="limpiarBusqueda">Limpiar Búsqueda</button>
-                                    </div>
+                                    </div> -->
                                 </form>
                             </div>
 
@@ -220,9 +220,9 @@ $db->despejar();
                                     <tr>
                                         <th>#</th>
                                         <th>Nombre</th>
-                                        <th>Email</th>
-                                        <th>Saldo</th>
-                                        <th>Fecha</th>
+                                        <th class='sm-hide'>Email</th>
+                                        <th class='sm-hide'>Saldo</th>
+                                        <th class='sm-hide'>Fecha</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -250,7 +250,7 @@ $db->despejar();
                                     if (isset($_GET["busqueda"])) {
 
                                         if (empty($_GET["busqueda"])) {
-                                            echo "Error";
+                                            echo "<h5>No has aplicado ningún patrón de búsqueda</h5>";
                                             exit;
                                         }
 
@@ -384,9 +384,9 @@ $db->despejar();
                                         echo "<tr data-id = {$row['id_socio']}>
                                                     <td>$contador</td>
                                                     <td>{$row['nombre_completo']}</td>
-                                                    <td>{$row['email']}</td>
-                                                    <td>{$row['saldo']}</td>                 
-                                                    <td>$fechaFormateada</td>                 
+                                                    <td class='sm-hide'>{$row['email']}</td>
+                                                    <td class='sm-hide'>{$row['saldo']}</td>                 
+                                                    <td class='sm-hide'>$fechaFormateada</td>                 
                                                     <td>
                                                     <a href='#' 
                                                     class='btn btn-success acciones accion_editar' 

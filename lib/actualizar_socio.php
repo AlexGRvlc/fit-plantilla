@@ -19,6 +19,9 @@ if (isset($_POST["id"])) {
     $saldo_actualizado = $_POST["saldo"];
     $foto  = $_FILES["foto"];
 
+    $foto_dir = "../pages/fotos/$nombre/"; 
+    $path_foto = "{$foto_dir}profile.jpg"; 
+
     $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     $consulta = "UPDATE socios
@@ -80,7 +83,7 @@ if (isset($_POST["id"])) {
     echo json_encode($output);
     exit;
 } else {
-    $output = ["estado" => "fail", "msg" => "Error: ID no recibido"];
+    $output = ["estado" => "fail", "msg" => "Error: ID no recibido", "path_foto" => $path_foto];
     echo json_encode($output);
     exit;
 }

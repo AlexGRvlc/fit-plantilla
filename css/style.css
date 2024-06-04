@@ -152,6 +152,52 @@ input {
   padding: 0;
 }
 
+.navbar {
+  padding: 15px;
+  position: fixed;
+  width: 100%;
+  min-width: 320px;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#nav_bar {
+  background-color: black;
+  height: 70px;
+}
+
+#nav_bar a {
+  color: #00f622;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 5px;
+}
+
+#nav_bar a:hover {
+  color: #000;
+  background-color: #00f622;
+  font-weight: bold;
+}
+
+.navbar-toggler {
+  background-color: #00f622;
+}
+
+#navbarNav {
+  padding: 5%;
+  margin: 0;
+}
+
+#navbarNav ul {
+  background-color: black;
+}
+
+#navbarNav li {
+  margin-top: 5%;
+}
+
 /* REGISTRO */
 #fondo_registro {
   height: 1000px;
@@ -178,10 +224,12 @@ input {
 }
 
 /* SESIONES */
+
+/* ADMIN */
 .left {
   height: 100%;
   width: 250px;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(22, 10, 56);
   position: fixed;
   padding: 0;
   padding-top: 70px;
@@ -197,6 +245,33 @@ input {
   margin-left: 250px;
   padding-top: 70px;
 }
+
+.right h1{
+  font-weight: bold;
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+  .left {
+    position: relative;
+    width: 100%; 
+    padding: 75px 0 10px 0;
+    margin: 0 ;
+  }
+  .right {
+    margin: 20px 0 0 0 ; 
+  }
+
+  .sm-hide {
+    display: none;
+  }
+
+  .cabecera {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+
 
 .cabecera {
   padding: 30px;
@@ -311,6 +386,6 @@ input {
 }
 
 
-#limpiarBusqueda {
+/* #limpiarBusqueda {
   display: none;
-}
+} */

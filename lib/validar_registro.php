@@ -26,37 +26,49 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     error_log("Formulario enviado mediante POST");
 
     // Obtener datos del formulario
-    $nombre = strtolower($_POST['nombre'] ?? '');
-    $apellido = strtolower($_POST['apellido'] ?? '');
-    $email = $_POST['email'] ?? "";
+    $nombre = trim(strtolower($_POST['nombre'] ?? ''));
+    $apellido = trim(strtolower($_POST['apellido'] ?? ''));
+    $email = trim($_POST['email'] ?? "");
     $password = $_POST['contrasena'] ?? "";
     $confirm_pass = $_POST['confirm-contrasena'] ?? "";
-    $saldo = $_POST['saldo'] ?? "";
+    $saldo = $_POST['saldo'] ?? ""; // Convierte el saldo a tipo float floatval()
     $foto = $_FILES['foto'] ?? "";
 
     error_log("Datos recibidos: nombre=$nombre, apellido=$apellido, email=$email, saldo=$saldo");
 
     if ($nombre && $apellido && $email && $password && $confirm_pass && $saldo) {
 
+        if (strlen($nombre) < 1 || strlen($nombre) > 20) {
+            $output = ["error" => true, "tipo_error" => "El nombre debe tener entre 1 y 20 caracteres"];
+            echo json_encode($output);
+            exit;
+        }
+
+        if (!is_numeric($saldo) || $saldo <= 0) {
+            $output = ["error" => true, "tipo_error" => "El saldo debe ser un número positivo"];
+            echo json_encode($output);
+            exit;
+        }
+
         $expreg = '/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/';
 
-        if (preg_match($expreg, $email)) { // preg_match - comparación con expresión regular
-            error_log("Email válido");
-
-            if (strlen($password) > 6) {
-                error_log("Contraseña válida");
+        if (preg_match($expreg, $email)) {
+            if (preg_match('/^(?=.*[A-Za-z])(?=.*\d).{6,}$/', $password)) {
                 $password_ok = true;
             } else {
-                $output = ["error" => true, "tipo_error" => "La contraseña debe ser mayor a 6 caracteres"];
-                error_log("Contraseña demasiado corta");
+                $output = ["error" => true, "tipo_error" => "La contraseña debe tener al menos 6 caracteres y contener letras y números"];
+                echo json_encode($output);
+                exit;
             }
         } else {
             $output = ["error" => true, "tipo_error" => "Email erróneo, por favor, inténtalo de nuevo"];
-            error_log("Email no válido");
+            echo json_encode($output);
+            exit;
         }
     } else {
         $output = ["error" => true, "tipo_error" => "Ninguno de los campos obligatorios puede quedar vacío"];
-        error_log("Faltan campos obligatorios");
+        echo json_encode($output);
+        exit;
     }
 }
 

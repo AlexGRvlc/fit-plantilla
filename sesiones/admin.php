@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-session_start(); // inicio de sesión
+// session_start(); // inicio de sesión
 
 // Recursos de apoyo
 require_once "../lib/config_conexion.php";
@@ -20,6 +20,15 @@ if (!$_SESSION['id_socio'] && !$_SESSION['nombre'] && !$_SESSION['rol']) {
 $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME); // instanciando clase mysqli
 
 $socio_id = $_SESSION["id_socio"]; // Sacar la id del usuario para parámetro consulta
+
+// # Total de socios
+$db->setConsulta("SELECT
+COUNT(id_socio) AS total_socios
+FROM socios");
+$db->ejecutar();
+$resultado = $db->getResultado();
+$total_socios = $resultado["total_socios"];
+$db->despejar();
 
 // Se requiere el nombre de usuario y su imagen 
 // para el panel/pantalla de registrad@
@@ -67,21 +76,31 @@ $db->ejecutar();
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" id="fondo_nav">
-        <div class="container-fluid nav_bar">
-            <a class="navbar-brand" href="../index.php">
-                <img src="../public/img/logo.webp" alt="logo" />
-            </a>
-            <a href="../pages/editar_socios.php">
-                <i class="bi bi-box-arrow-in-up-right">Editar</i>
-            </a>
-            <div class="text-center">
 
-            <a id="logout" class="nav-link active text-center" href="#">Cerrar Sesión<i class="bi bi-box-arrow-in-right"></i></a>
-
-            </div>
+    <nav class="navbar navbar-expand-lg nav_bar" id="nav_bar">
+        <a class="navbar-brand" href="#">
+        <img src="../public/img/logo.webp" alt="logo" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+        data-bs-target="#navbarNav" aria-controls="navbarNav" 
+        aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+            <a class="nav-link editar-nav" href="../pages/editar_socios.php">
+                <i class="bi bi-box-arrow-in-up-right "> Editar</i>
+            </a>
+            </li>
+            <li class="nav-item cerrar-nav">
+            <a id="logout" class="nav-link active text-center  cerrar-nav" href="#">
+                Cerrar Sesión<i class="bi bi-box-arrow-in-right"></i></a>
+            </li>
+          </ul>
         </div>
-    </nav>
+      </nav>
+    </div>
 
     <div class="container-fluid p-0">
         <div class="left">
@@ -95,13 +114,12 @@ $db->ejecutar();
 
         <div class="right">
 
-
             <div class="cabecera">
-                <div class="titulo">
+                <div class="titulo order-sm-1">
                     <h1>Administración</h1>
-                    <small>Bienvenido a la administración de usuarios</small>
+                    <p class='sm-hide' >Bienvenido a la administración de usuarios</p>
                 </div>
-                <div class="fecha float-end">
+                <div class="fecha float-end order-sm-2">
                     <i class="bi bi-calendar3"></i>
                     <span><?php echo "$dia $dia_date $mes, $anyo"; ?></span>
                 </div>
@@ -112,53 +130,19 @@ $db->ejecutar();
             <div class="container-fluid " id="panel">
                 <div class="row" id="paneles">
 
-                    <div class="col-lg-3 col-md-3 col-sm-6">
+                    <div class="col-lg-6 col-sm-12 caja">
                         <div class="panel">
                             <div class="icono  i_red">
                                 <i class="bi bi-people"></i>
                             </div>
                             <div class="valor">
-                                <h1 class="cantidad_socios">152</h1>
+                                <h1 class="cantidad_socios">  <?php echo $total_socios; ?>  </h1>
                                 <p>Socios</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-md-3 col-sm-6">
-                        <div class="panel">
-                            <div class="icono  i_blue">
-                                <i class="bi bi-people"></i>
-                            </div>
-                            <div class="valor">
-                                <h1 class="cantidad_socios">152</h1>
-                                <p>Socios</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-md-3 col-sm-6">
-                        <div class="panel">
-                            <div class="icono  i_green">
-                                <i class="bi bi-people"></i>
-                            </div>
-                            <div class="valor">
-                                <h1 class="cantidad_socios">152</h1>
-                                <p>Socios</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-md-3 col-sm-6">
-                        <div class="panel">
-                            <div class="icono  i_purple">
-                                <i class="bi bi-people"></i>
-                            </div>
-                            <div class="valor">
-                                <h1 class="cantidad_socios">152</h1>
-                                <p>Socios</p>
-                            </div>
-                        </div>
-                    </div>
+                   
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="caja">
@@ -171,9 +155,9 @@ $db->ejecutar();
                                             <tr>
                                                 <th>#</th>
                                                 <th>Nombre</th>
-                                                <th>Email</th>
-                                                <th>Saldo</th>
-                                                <th>Fecha</th>
+                                                <th class='sm-hide' >Email</th>
+                                                <th class='sm-hide' >Saldo</th>
+                                                <th  >Fecha</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -186,9 +170,9 @@ $db->ejecutar();
                                                 echo "<tr>
                                                 <td>$contador</td>
                                                 <td>{$row['nombre_completo']}</td>
-                                                <td>{$row['email']}</td>
-                                                <td>{$row['saldo']}</td>                 
-                                                <td>$fechaFormateada</td>                 
+                                                <td class='sm-hide' >{$row['email']}</td>
+                                                <td class='sm-hide' >{$row['saldo']}</td>                 
+                                                <td  >$fechaFormateada</td>                 
                                             </tr>";
                                             }
                                             ?>

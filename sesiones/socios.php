@@ -93,39 +93,13 @@ $db->ejecutar();
         <div class="right">
 
 
-            <div class="cabecera">
-                <div class="titulo">
-                    <h1>Zona Socio</h1></h1>
-                    <small>Bienvenido a tu portal</small>
-                </div>
-                <div class="fecha float-end">
-                    <i class="bi bi-calendar3"></i>
-                    <span><?php echo "$dia $dia_date $mes, $anyo"; ?></span>
-                </div>
-            </div>
+    <div class="caja">
+        <h1>Zona Socios</h1>
+    </div>
 
 
 
-            <div class="container-fluid " id="panel">
-                <div class="row" id="paneles">
 
-                    <div class="col-lg-3 col-md-3 col-sm-6 caja">
-                        <div class="panel">
-                            <div class="icono  i_red">
-                                <i class="bi bi-people"></i>
-                            </div>
-                            <div class="valor">
-                                <h1 class="cantidad_socios">152</h1>
-                                <p>Socios</p>
-                            </div>
-                        </div>
-                    </div>   
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="caja">
-                                <div class="caja-cabecera">
-                                    <h1>Últimos usuarios registrados</h1>
-                                </div>
 
                             </div>
                         </div>

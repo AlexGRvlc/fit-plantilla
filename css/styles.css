@@ -19,6 +19,7 @@
   color: #00f622;
   font-weight: bold;
   text-transform: uppercase;
+  padding: 5px;
 }
 
 #nav_bar a:hover {

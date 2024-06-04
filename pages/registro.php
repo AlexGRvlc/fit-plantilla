@@ -10,7 +10,6 @@
 </head>
 
 <body>
-    <?php require_once "../lib/validar_registro.php" ?>
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" id="fondo_nav">
         <div class="container-fluid nav_bar">

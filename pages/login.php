@@ -50,7 +50,7 @@ if ((isset($_SESSION['nombre']) && isset($_SESSION['id_socio']) && isset($_SESSI
                         </div>
                     </div>
                     <div class="form-group mb-3">
-                        <input name="email" type="text" class="form-control" id="" placeholder="usuario">
+                        <input name="email" type="text" autofocus class="form-control" id="user_login" placeholder="usuario">
                     </div>
 
                     <div class="form-group mb-3">

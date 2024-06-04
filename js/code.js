@@ -57,70 +57,49 @@ $(document).ready(function () {
       },
     });
   });
+  
+ // Registro
+    let $btn_registro = $("#btn_registro"),
+        $alerta_registro = $("#error_registro"),
+        $alerta_contenido_registro = $("#msg_error_registro");
+  
+    $btn_registro.on("click", function (e) {
+      e.preventDefault();
+      let formData_registro = new FormData(document.getElementById("form_registro"));
+      let $url_registro = "../lib/validar_registro.php";
+  
+      $.ajax({
+        type: "POST",
+        url: $url_registro,
+        data: formData_registro,
+        contentType: false,
+        processData: false,
+        dataType: "json",
+        success: function (response) {
 
-  // Registro
-  let $form_registro = $("#formulario_registro"),
-    $btn_registro = $("#btn_registro"),
-    $alerta_registro = $("#error_registro"),
-    $alerta_contenido_registro = $("#msg_error_registro");
 
-  $btn_registro.on("click", function (e) {
-    e.preventDefault();
-    let formData_registro = new FormData(
-      document.getElementById("form_registro")
-    );
-    let $url_registro = "../lib/validar_registro.php";
 
-    console.log(formData_registro);
-
-  //   fetch('../lib/validar_registro.php', {
-  //     method: 'POST',
-  //     body: formData_registro
-  // })
-  // .then(response => response.json())
-  // .then(data => {
-  //     console.log(data.tipo_error);
-  //     // Manejar la respuesta
-  // })
-  // .catch(error => {
-  //     console.error('Error:', error);
-  // });
-
-  $.ajax({
-    type: "POST",
-    url: $url_registro,
-    data: formData_registro,
-    contentType: false,
-    processData: false,
-    dataType: "json",
-    success: function (response) {
-      if (response.error) {
-        $alerta_registro.css({ display: "block" });
-        $alerta_contenido_registro.html(response.tipo_error);
-      } else {
-        alert("Registro exitoso");
-        // Actualizar dinámicamente el contenido de la imagen y mostrar el mensaje de registro completo
-        console.log(response);
-        $form_registro.hide();
-        $("#registro_completado img").attr("src", response.path_foto);
-        $("#registro_completado").show();
-      }
-    },
-    error: function (e) {
-      console.log("Error en la solicitud AJAX:", e);
-      console.log("Respuesta del servidor:", e.responseText);
-    },
-      error: function (e) {
-        console.log("Error en la solicitud AJAX:", e);
-        console.log("Respuesta del servidor:", e.responseText);
-      },
+          if (response.error) {
+            $alerta_registro.css({ display: "block" });
+            $alerta_contenido_registro.html(response.tipo_error);
+          } else {
+            $("#form_registro").hide();
+            $("#registro_completado img").attr("src", response.path_foto);
+            $("#registro_completado").show();
+          }
+        },
+        error: function (e) {
+          console.log("Error en la solicitud AJAX:", e);
+          console.log("Respuesta del servidor:", e.responseText);
+        },
+      });
     });
-  });
+  
+  
 
-  // Elimnar
+  // Eliminar
   let id;
 
-  let $eliminar = $("#accion_eliminar");
 
   $(document).on("click", ".accion_eliminar", function (e) {
     e.preventDefault();
@@ -132,7 +111,7 @@ $(document).ready(function () {
 
   $("#si").on("click", function () {
     let id = $(this).data("id");
-    console.log("id antes de ajax " + id);
+
     $.ajax({
       type: "POST",
       url: "../lib/eliminar.php",
@@ -141,12 +120,7 @@ $(document).ready(function () {
       success: function (response) {
         if (response.estado == "ok") {
           $("#caja_modal").modal("hide");
-          $("tr[data-id='" + id + "']")
-            .css({
-              background: "red",
-              color: "white",
-            })
-            .slideUp(2000);
+            location.reload();
         } else {
           alert("A ocurrido un error");
         }
@@ -158,8 +132,7 @@ $(document).ready(function () {
   });
 
   // Editar
-  $("#limpiarBusqueda").on("click", function () {
-    alert("limpiamos");
+  $("#limpiarBusqueda").on("click", function () {    
     var baseUrl = window.location.origin + window.location.pathname; // Obtiene la URL base sin parámetros
     window.location.href = baseUrl;
   });
@@ -179,14 +152,12 @@ $(document).ready(function () {
     $("#edit_email").val(email);
     $("#edit_saldo").val(saldo);
 
-    $("#modal_editar").modal(show);
-    $("#fondo_oscuro").modal(show);
+    $("#modal_editar").css({ display: "block" });
+    // $("#fondo_oscuro").modal(show);
   });
 
   $(".btn_actualizar").on("click", function (e) {
     e.preventDefault();
-
-    $("#limpiarBusqueda").modal("show"); // --> !
 
     let formData_editar = new FormData(document.getElementById("form_editar"));
 
@@ -198,9 +169,10 @@ $(document).ready(function () {
       contentType: false,
       dataType: "json",
       success: function (response) {
+        console.log(response.path_foto)
         if (response.estado === "ok") {
           // alert(rsponse.msg)
-          $("#modal_editar").modal("hide");
+          $("#modal_editar").css({ display: "block" });
           location.reload(); // Recargar la página para ver los cambios
         } else {
           console.log("Error en la solicitud AJAX:", response.msg);
@@ -209,9 +181,14 @@ $(document).ready(function () {
       },
       error: function (err) {
         console.log(err);
-        // alert("Error en la solicitud AJAX o eso dicen.....");
         location.reload();
       },
     });
   });
+
+  // $("#btn_buscar").on("click", function(e){
+  //   e.preventDefault();
+  //   $("#limpiarBusqueda").css({ display: "block" });
+
+  // })
 });
