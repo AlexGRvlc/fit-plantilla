@@ -15,7 +15,7 @@ function borrarFoto($dir_foto)
                 }
             }
             closedir($gestor);
-            chmod($dir_foto, 0755);
+            chmod($dir_foto, 0775);
             rmdir($dir_foto);
             sleep(1);
         } else {

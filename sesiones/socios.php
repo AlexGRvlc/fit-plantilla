@@ -23,9 +23,9 @@ $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT); // instanciando
 
 $socio_id = $_SESSION["id_socio"]; // Sacar la id del usuario para parámetro consulta
 
-// Se requiere el nombre de usuario y su imagen 
+// Se requiere el nombre de usuario y su imagen
 // para el panel/pantalla de registrad@
-$db->setConsulta("SELECT 
+$db->setConsulta("SELECT
                 id_socio,
                 CONCAT(nombre, ' ', apellido) AS nombre_completo,
                 imagen
@@ -44,12 +44,12 @@ $db->despejar();
 
 // Para sacar variables a mostrar en el panel de administrador/a
 // de la info de los n últimos socios registrados
-$db->setConsulta("SELECT 
-                CONCAT (nombre, ' ', apellido)  AS nombre_completo, 
-                email, 
-                saldo, 
-                fecha 
-                FROM socios 
+$db->setConsulta("SELECT
+                CONCAT (nombre, ' ', apellido)  AS nombre_completo,
+                email,
+                saldo,
+                fecha
+                FROM socios
                 ORDER BY fecha DESC LIMIT 10 ");
 $db->ejecutar();
 
@@ -111,7 +111,7 @@ $db->ejecutar();
     </div>
 
     <?php
-    $db->cerrar();
+    // $db->cerrar();
     ?>
 
 
