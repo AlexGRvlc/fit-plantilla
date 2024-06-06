@@ -57,10 +57,20 @@ function validar_foto($nombre, $update = false)
             mkdir("../pages/fotos", 0755, true);
             echo "Directorio ../pages/fotos creado.<br>";
         }
+
+        chmod("../pages/fotos", 0755);
+
         if (!file_exists($foto_dir)) {
-            mkdir($foto_dir, 0755, true);
+            if (!mkdir($foto_dir, 0755, true)) {
+                echo "No se pudo crear el directorio $foto_dir.<br>";
+                return false;
+            }
             echo "Directorio $foto_dir creado.<br>";
+
+            // Cambiar permisos del directorio recién creado
+            chmod($foto_dir, 0755);
         }
+        
         if (move_uploaded_file($tmp_name, $path_foto)) {
             return $path_foto;
         } else {
