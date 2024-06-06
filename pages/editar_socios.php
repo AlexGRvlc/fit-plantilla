@@ -514,7 +514,5 @@ $db->despejar();
     </div>
     </div>
 
-        <?php
-    $db->cerrar();
-    ?> 
     <?php require '../inc/footer.inc'; ?>
+    
