@@ -409,7 +409,7 @@ $db->despejar();
                                     }
                                     // id='accion_eliminar' 
                                     $db->despejar();
-
+                                    $db->cerrar();
                                     ?>
 
 
