@@ -169,7 +169,7 @@ if ($form_ok) {
 } else {
     $output["path_foto"] = $path_foto; 
 }
-$db->cerrar();
+// $db->cerrar();
 
 $json = json_encode($output);
 echo $json;
