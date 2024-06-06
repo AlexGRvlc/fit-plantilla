@@ -44,7 +44,6 @@ if (isset($_POST["eliminar"])) {
     echo $json;
 
     $db->despejar();
-    $db->cerrar();
 
     exit;
 } else {
