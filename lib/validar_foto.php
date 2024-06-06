@@ -11,6 +11,7 @@ function borrarFoto($dir_foto)
 
             while (false !== ($archivo = readdir($gestor))) {
                 if ($archivo != "." && $archivo != ".." && $archivo != "Thumbs.db") {
+                    chmod("$dir_foto/$archivo", 0644);
                     unlink("$dir_foto/$archivo");
                 }
             }
@@ -70,7 +71,7 @@ function validar_foto($nombre, $update = false)
             // Cambiar permisos del directorio recién creado
             chmod($foto_dir, 0755);
         }
-        
+
         if (move_uploaded_file($tmp_name, $path_foto)) {
             return $path_foto;
         } else {
