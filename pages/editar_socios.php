@@ -28,7 +28,7 @@ if ($_SESSION["rol"] == "registrado") {
     exit;
 }
 
-$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME); // instanciación de Obj sql
+$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT); // instanciación de Obj sql
 
 $socio_id = $_SESSION["id_socio"];
 

@@ -19,7 +19,7 @@ if (!$_SESSION['id_socio'] && !$_SESSION['nombre'] && !$_SESSION['rol']) {
 
 
 
-$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME); // instanciando clase mysqli
+$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT); // instanciando clase mysqli
 
 $socio_id = $_SESSION["id_socio"]; // Sacar la id del usuario para parámetro consulta
 
