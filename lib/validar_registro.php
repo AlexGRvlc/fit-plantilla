@@ -88,8 +88,13 @@ if (isset($db)){
         $output = ["error" => true, "tipo_error" => "Este email ya está registrado"];
         error_log("El email ya está registrado");
     } else {
-        // Aquí puedes continuar con el proceso de inserción del nuevo usuario
-        // Verificar si las contraseñas coinciden, validar la foto, etc.
+
+        
+
+
+
+
+
     }
 
 }
@@ -117,18 +122,6 @@ if ($password_ok) {
             $path_foto = validar_foto($nombre);
             if ($path_foto) {
                 error_log("Foto validada: $path_foto");
-
-
-
-
-                
-
-
-
-
-
-
-
 
                 $fecha = time();
                 $consulta = "INSERT INTO socios (nombre, apellido, contrasena, email, saldo, imagen, fecha) VALUES (?, ?, ?, ?, ?, ?, ?)";

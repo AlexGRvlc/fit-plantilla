@@ -65,6 +65,7 @@ $(document).ready(function () {
   
     $btn_registro.on("click", function (e) {
       e.preventDefault();
+      $alerta_registro.css({ display: "none" });
       let formData_registro = new FormData(document.getElementById("form_registro"));
       let $url_registro = "../lib/validar_registro.php";
   
@@ -83,12 +84,12 @@ $(document).ready(function () {
             $alerta_registro.css({ display: "block" });
             $alerta_contenido_registro.html(response.tipo_error);
           } else {
-            $("#form_registro").hide();
-            $("#registro_completado img").attr("src", response.path_foto);
-            $("#registro_completado").show();
           }
-        },
-        error: function (e) {
+          },
+          error: function (e) {
+          $("#form_registro").hide();
+          $("#registro_completado img").attr("src", response.path_foto);
+          $("#registro_completado").show();
           console.log("Error en la solicitud AJAX:", e);
           console.log("Respuesta del servidor:", e.responseText);
         },
