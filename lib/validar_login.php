@@ -22,7 +22,7 @@ if ($_POST) {
 
 
     if ($email && $password) {
-        $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
 
         $validar_email = $db->validarDatos('email', 'socios', $email);
 

@@ -7,7 +7,7 @@ spl_autoload_register(function ($clase) {
 });
 
 $output = [];
-$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
 
 if (isset($_POST["eliminar"])) {
 

@@ -19,7 +19,7 @@ $password_ok = false;
 $output = [];
 $path_foto = '';
 
-$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
 
 // Verificar si se ha enviado el formulario
 if ($_SERVER["REQUEST_METHOD"] === "POST") {

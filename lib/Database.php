@@ -9,9 +9,9 @@ class Database
     protected $resultado;
 
     // Función constructora
-    public function __construct($db_host, $db_user, $db_pass, $db_name)
+    public function __construct($db_host, $db_user, $db_pass, $db_name, $db_port )
     {
-        $this->db = new mysqli($db_host, $db_user, $db_pass, $db_name);
+        $this->db = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port );
 
         if ($this->db->connect_errno) {
             trigger_error("Fallo al realizar la conexión, Tipo de error -> ({$this->db->connect_error})", E_USER_ERROR);

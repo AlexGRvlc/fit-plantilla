@@ -22,7 +22,7 @@ if (isset($_POST["id"])) {
     $foto_dir = "../pages/fotos/$nombre/"; 
     $path_foto = "{$foto_dir}profile.jpg"; 
 
-    $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $db = new Database(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
 
     $consulta = "UPDATE socios
                  SET nombre = ?,
