@@ -409,7 +409,7 @@ $db->despejar();
                                     }
                                     // id='accion_eliminar' 
                                     $db->despejar();
-                                    $db->cerrar();
+                                    
                                     ?>
 
 
@@ -513,4 +513,8 @@ $db->despejar();
 
     </div>
     </div>
+
+        <?php
+    $db->cerrar();
+    ?> 
     <?php require '../inc/footer.inc'; ?>

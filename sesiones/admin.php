@@ -195,8 +195,8 @@ $db->ejecutar();
 
     </div>
     
-    <?php
+     <?php
     $db->cerrar();
-    ?>
+    ?> 
 
     <?php require '../inc/footer.inc'; ?>
