@@ -77,21 +77,20 @@ $(document).ready(function () {
         processData: false,
         dataType: "json",
         success: function (response) {
-
-
-
-          if (response.error) {
-            $alerta_registro.css({ display: "block" });
-            $alerta_contenido_registro.html(response.tipo_error);
-          } else {
-          }
-          },
-          error: function (e) {
           $("#form_registro").hide();
           $("#registro_completado img").attr("src", response.path_foto);
           $("#registro_completado").show();
-          console.log("Error en la solicitud AJAX:", e);
-          console.log("Respuesta del servidor:", e.responseText);
+
+
+        //   if (response.error) {
+        //     $alerta_registro.css({ display: "block" });
+        //     $alerta_contenido_registro.html(response.tipo_error);
+        //   } else {
+        //   }
+        //   },
+        //   error: function (e) {
+        //   console.log("Error en la solicitud AJAX:", e);
+        //   console.log("Respuesta del servidor:", e.responseText);
         },
       });
     });

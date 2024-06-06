@@ -9,7 +9,6 @@ require_once "../lib/config_conexion.php";
 require_once "../lib/date.php";
 require_once "../lib/validar_foto.php";
 require "../lib/validar_login.php";
-require_once "../lib/borrar_foto.php";
 spl_autoload_register(function ($clase) {
     require_once "../lib/$clase.php";
 });
