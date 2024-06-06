@@ -130,7 +130,7 @@ if ($password_ok) {
                     if ($db->ejecutar()) {
                         $output = ["error" => false, "tipo_error" => "", "path_foto" => $path_foto];
                         $form_ok = true;
-                        $db->cerrar();
+                        // $db->cerrar();
                         error_log("Registro insertado correctamente");
                     } else {
                         $output = ["error" => true, "tipo_error" => "Error al ejecutar la consulta."];

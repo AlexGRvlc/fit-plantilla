@@ -78,7 +78,7 @@ if (isset($_POST["id"])) {
         }
 
         $db->despejar();
-        $db->cerrar();
+        // $db->cerrar();
     }
 
     echo json_encode($output);
