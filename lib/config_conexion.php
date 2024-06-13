@@ -1,7 +1,7 @@
 <?php
 
 if (!defined('DB_HOST')) {
-    define('DB_HOST', 'roundhouse.proxy.rlwy.net');
+    define('DB_HOST', 'viaduct.proxy.rlwy.net');
 }
 
 if (!defined('DB_USER')) {
@@ -9,7 +9,7 @@ if (!defined('DB_USER')) {
 }
 
 if (!defined('DB_PASS')) {
-    define('DB_PASS', 'BEbRUYJBxwrRhjFSBvvnUannIhBQdLrS');
+    define('DB_PASS', 'SnkGiAKAqFiEcqvZPumJTHCYbeeEHVMA');
 }
 
 if (!defined('DB_NAME')) {
@@ -17,9 +17,10 @@ if (!defined('DB_NAME')) {
 }
 
 if (!defined('DB_PORT')) {
-    define('DB_PORT', '12612');
+    define('DB_PORT', '54789');
 }
 
 if (!defined('DB_CHARSET')) {
     define('DB_CHARSET', 'utf8');
 }
+

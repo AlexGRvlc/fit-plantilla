@@ -12,6 +12,6 @@ if (isset($_COOKIE['nombre'])) {
     setcookie('img', $_SESSION['imagen'], $caduca, "/");
 }
 
-header("Location: ../index.html");
+header("Location: ../index.php");
 
 ?>

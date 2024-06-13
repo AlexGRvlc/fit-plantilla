@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 session_start();
 // Asegura el redireccionamiento si la sesión está iniciada
@@ -13,61 +10,61 @@ if ((isset($_SESSION['nombre']) && isset($_SESSION['id_socio']) && isset($_SESSI
         $_SESSION['rol'] = $_COOKIE['rol'];
     }
 
-    header("Location: admin.php");
-    exit;
+    header("Location: ../sesiones/admin.php");
 }
 
 ?>
-
-
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitgim | Log In</title>
+    <title>FitGim | Log In</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
+    <nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary" id="fondo_nav">
+        <div class="container-fluid nav_bar">
+            <a class="navbar-brand" href="../index.php">
+                <img src="../public/img/logo.webp" alt="logo" />
+            </a>
+            <div class="text-center">
+                <a class="nav-link active text-center" id="inicio" aria-current="page" href="../index.php">Inicio</a>
+            </div>
+    </nav>
 
-    <div id="login-container">
-        <div class="wrapper">
+    <div class="container-fluid" id="fondo_login">
+        <div class="row">
 
-            <form id="form-login" action="" method="POST">
-                <legend>Login</legend>
-
-
-                <div class='alerta alerta_error' id="oculto-login">
-                    <div class='alerta_icon'>
-                        <i class="bi bi-x-circle"></i>
+            <div class="col-sm-4 caja col-center rounded" id="login-form">
+                <form id="formulario" method="POST" role="form" class="rounded">
+                    <legend class="text-center">Log In</legend>
+                    <div class='alerta alerta_error'>
+                        <div class='alerta_icon'>
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                        <div class='alerta_wrapper'>
+                        </div>
                     </div>
-                    <div class='alerta_wrapper'>hola
+                    <div class="form-group mb-3">
+                        <input name="email" type="text" autofocus class="form-control" id="user_login" placeholder="usuario">
                     </div>
-                </div>
 
-                <div class="input-box">
-                    <input type="text" name="email" placeholder="Email Usuario">
-                    <img class="form-icon" src="../public/imgs/user.svg" alt="user">
-                </div>
-                <div class="input-box">
-                    <input type="password" name="password" placeholder="Contraseña">
-                    <img class="form-icon" src="../public/imgs/lock.svg" alt="">
-                </div>
-
-                <div class="recordar">
-                    <label><input type="checkbox" name="sesion_activa" value="activo"> Recordar sesión</label>
-                </div>
-                <div class="centrar">
-                    <button class="btn" id="btn_login">Entrar</button>
-                </div>
-                <div class="link-registro">
-                    <a href="registro.php">Registrarse</a>
-                </div>
-            </form>
+                    <div class="form-group mb-3">
+                        <input name="password" type="password" class="form-control" id="password" placeholder="contraseña">
+                    </div>
+                    <button type="button" id="btn_login" class="btn btn-primary rounded me-3">Ingresar</button>
+                    <a class="float-end" href="registro.php">Registrarse</a>
+                    <label for="sesion_activa" class="checkbox-inline">
+                        <input name="sesion_activa" type="checkbox" value="activo"> Mantener sesión iniciada
+                    </label>
+                </form>
+            </div>
         </div>
 
     </div>
 
-    <?php require_once "../inc/footer.inc"; ?>
+    <?php require '../inc/footer.inc'; ?>
