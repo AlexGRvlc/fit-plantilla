@@ -75,7 +75,6 @@ class Database
                                             apellido, 
                                             email, 
                                             saldo, 
-                                            imagen 
                                             FROM socios 
                                             WHERE id_socio = ?");
         $this->param->bind_param('i', $id);
@@ -171,4 +170,10 @@ class Database
     {
         $this->db->select_db($db);
     }
+//encriptar CONTRASEÑAS
+// protected function encriptar($string){
+//     return md5($string);
+// }
 }
+
+?>
